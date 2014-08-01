@@ -14,10 +14,13 @@ function! grammarous#error(...)
     echohl ErrorMsg
     try
         if a:0 > 1
-            echomsg 'vim-grammarous: ' . call('printf', a:000)
+            let msg = 'vim-grammarous: ' . call('printf', a:000)
         else
-            echomsg 'vim-grammarous: ' . a:1
+            let msg = 'vim-grammarous: ' . a:1
         endif
+        for l in split(msg, "\n")
+            echomsg l
+        endfor
     finally
         echohl None
     endtry
