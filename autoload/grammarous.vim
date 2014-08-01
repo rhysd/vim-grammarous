@@ -24,12 +24,7 @@ function! grammarous#error(...)
 endfunction
 
 function! s:find_jar(dir)
-    let relative = findfile('languagetool-commandline.jar', a:dir . '/**')
-    if relative == ''
-        return ''
-    endif
-
-    return a:dir . '/' . relative
+    return fnamemodify(findfile('languagetool-commandline.jar', a:dir . '/**'), ':p')
 endfunction
 
 function! s:prepare_jar(dir)
@@ -87,7 +82,7 @@ function! grammarous#invoke_check(...)
 
     let tmpfile = tempname()
     execute 'redir! >' tmpfile
-        echo text
+        silent echo text
     redir END
 
     let cmd = printf(
