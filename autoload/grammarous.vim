@@ -48,6 +48,11 @@ function! s:init()
         return s:jar_file
     endif
 
+    if !exists('*matchaddpos')
+        call grammarous#error('Vim 7.4p330+ is required for matchaddpos()')
+        return ''
+    endif
+
     try
         silent call vimproc#version()
     catch
@@ -73,22 +78,31 @@ function! s:init()
     return jar
 endfunction
 
+function! s:make_text(text)
+    if type(a:text) == type('')
+        return a:text
+    else
+        return join(a:text, "\n")
+    endif
+endfunction
+
 function! grammarous#invoke_check(...)
     let jar = s:init()
     if jar ==# ''
-        return ''
+        return []
     endif
 
     if a:0 < 1
         call grammarous#error('Invalid argument')
-        return ''
+        return []
     endif
 
-    let [lang, text] = a:0 == 1 ? [g:grammarous#default_lang, a:1] : [a:1, a:2]
+    let lang = a:0 == 1 ? g:grammarous#default_lang : a:1
+    let text = s:make_text(a:0 == 1 ? a:1 : a:2)
 
     let tmpfile = tempname()
     execute 'redir! >' tmpfile
-        silent echo text
+        silent echon text
     redir END
 
     let cmd = printf(
@@ -107,9 +121,48 @@ function! grammarous#invoke_check(...)
 
     if vimproc#get_last_status()
         call grammarous#error("Command '%s' is failed:\n%s", cmd, xml)
-        return ''
+        return []
     endif
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
+endfunction
+
+function! s:get_errors(xml)
+    return map(filter(a:xml.childNodes(), 'v:val.name ==# "error"'), 'v:val.attr')
+endfunction
+
+function! s:matcherrpos(...)
+    return matchaddpos('GrammarousError', [a:000], 999)
+endfunction
+
+function! s:highlight_error(from, to)
+    if a:from[0] == a:to[0]
+        return s:matcherrpos(a:from[0], a:from[1], a:to[1] - a:from[1])
+    endif
+
+    let ids = [s:matcherrpos(a:from[0], a:from[1], strlen(getline(a:from[0]))+1 - a:from[1])]
+    let line = a:from[0] + 1
+    while line != a:to[0]
+        call add(ids, s:matcherrpos(line))
+    endwhile
+    call add(ids, s:matcherrpos(a:to[0], 1, a:to[1]))
+    return ids
+endfunction
+
+function! s:highlight_errors_in_current_buffer(errs)
+    PP! a:errs
+    return map(a:errs, "
+                \ s:highlight_error(
+                \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
+                \     [str2nr(v:val.toy)+1, str2nr(v:val.tox)+1],
+                \   )
+                \ ")
+endfunction
+
+function! grammarous#check_current_buffer(...)
+    let lang = a:0 > 0 ? a:1 : g:grammarous#default_lang
+
+    let result = grammarous#invoke_check(lang, getline(1, '$'))
+    return s:highlight_errors_in_current_buffer(s:get_errors(result))
 endfunction
 
 " FIXME: Parse result
