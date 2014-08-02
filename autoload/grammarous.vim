@@ -1,6 +1,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:V = vital#of('grammarous')
+let s:XML = s:V.import('Web.XML')
+
 let g:grammarous#root = fnamemodify(expand('<sfile>'), ':p:h:h')
 let g:grammarous#jar_dir = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
 let g:grammarous#jar_url = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
@@ -106,8 +109,7 @@ function! grammarous#invoke_check(...)
         call grammarous#error("Command '%s' is failed:\n%s", cmd, xml)
         return ''
     endif
-
-    return xml
+    return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
 " FIXME: Parse result
