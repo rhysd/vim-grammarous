@@ -21,6 +21,15 @@ function! s:source.hooks.on_init(args, context)
     let s:bufnr = bufnr('%')
 endfunction
 
+function! s:source.hooks.on_close(args, context)
+    unlet! s:errs
+    if get(a:context, 'no_quit', 0)
+        execute bufwinnr(s:bufnr) . 'wincmd w'
+        call grammarous#reset_highlights()
+        wincmd p
+    endif
+endfunction
+
 function! s:source.hooks.on_syntax(args, context)
     syntax match uniteSource__GrammarousKeyword "\%(Context\|Correct\):" contained containedin=uniteSource__Grammarous
     syntax keyword uniteSource__GrammarousError Error contained containedin=uniteSource__Grammarous
