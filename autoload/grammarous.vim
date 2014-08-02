@@ -126,7 +126,7 @@ function! grammarous#invoke_check(...)
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
-function! s:get_errors(xml)
+function! grammarous#get_errors_from_xml(xml)
     return map(filter(a:xml.childNodes(), 'v:val.name ==# "error"'), 'v:val.attr')
 endfunction
 
@@ -148,9 +148,8 @@ function! s:highlight_error(from, to)
     return ids
 endfunction
 
-function! s:highlight_errors_in_current_buffer(errs)
-    PP! a:errs
-    return map(a:errs, "
+function! grammarous#highlight_errors_in_current_buffer(errs)
+    return map(copy(a:errs), "
                 \ s:highlight_error(
                 \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
                 \     [str2nr(v:val.toy)+1, str2nr(v:val.tox)+1],
@@ -158,11 +157,17 @@ function! s:highlight_errors_in_current_buffer(errs)
                 \ ")
 endfunction
 
+function! grammarous#reset_highlights()
+    for m in filter(getmatches(), 'v:val.group ==# "GrammarousError"')
+        call matchdelete(m.id)
+    endfor
+endfunction
+
 function! grammarous#check_current_buffer(...)
     let lang = a:0 > 0 ? a:1 : g:grammarous#default_lang
 
     let result = grammarous#invoke_check(lang, getline(1, '$'))
-    return s:highlight_errors_in_current_buffer(s:get_errors(result))
+    return grammarous#highlight_errors_in_current_buffer(grammarous#get_errors_from_xml(result))
 endfunction
 
 " FIXME: Parse result
