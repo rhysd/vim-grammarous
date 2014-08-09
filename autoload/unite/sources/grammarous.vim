@@ -15,18 +15,12 @@ function! unite#sources#grammarous#define()
 endfunction
 
 function! s:source.hooks.on_init(args, context)
-    call call('grammarous#check_current_buffer', a:args)
     let s:bufnr = bufnr('%')
     let s:errs = b:grammarous_result
 endfunction
 
 function! s:source.hooks.on_close(args, context)
     unlet! s:errs
-    if get(a:context, 'no_quit', 0)
-        execute bufwinnr(s:bufnr) . 'wincmd w'
-        call grammarous#reset_highlights()
-        wincmd p
-    endif
 endfunction
 
 function! s:source.hooks.on_syntax(args, context)

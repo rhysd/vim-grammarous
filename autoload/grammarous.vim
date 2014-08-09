@@ -13,6 +13,8 @@ let g:grammarous#default_lang = get(g:, 'grammarous#default_lang', 'en')
 " FIXME
 let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
 
+highlight link GrammarousError SpellBad
+
 function! grammarous#error(...)
     echohl ErrorMsg
     try
@@ -134,8 +136,8 @@ function! grammarous#generate_highlight_pattern(error)
     let line = a:error.fromy + 1
     let prefix = a:error.contextoffset > 0 ? s:sunitize(a:error.context[: a:error.contextoffset-1]) : ''
     let rest = a:error.context[a:error.contextoffset :]
-    let the_error = s:sunitize(rest[: a:error.errorlength])
-    let rest = s:sunitize(rest[a:error.errorlength+1 :])
+    let the_error = s:sunitize(rest[: a:error.errorlength-1])
+    let rest = s:sunitize(rest[a:error.errorlength :])
     return '\V' . prefix . '\zs' . the_error . '\ze' . rest
 endfunction
 
