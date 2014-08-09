@@ -17,10 +17,11 @@ endfunction
 function! s:source.hooks.on_init(args, context)
     call call('grammarous#check_current_buffer', a:args)
     let s:bufnr = bufnr('%')
+    let s:errs = b:grammarous_result
 endfunction
 
 function! s:source.hooks.on_close(args, context)
-    unlet! b:grammarous_result
+    unlet! s:errs
     if get(a:context, 'no_quit', 0)
         execute bufwinnr(s:bufnr) . 'wincmd w'
         call grammarous#reset_highlights()
@@ -33,11 +34,14 @@ function! s:source.hooks.on_syntax(args, context)
     syntax keyword uniteSource__GrammarousError Error contained containedin=uniteSource__Grammarous
     highlight default link uniteSource__GrammarousKeyword Keyword
     highlight default link uniteSource__GrammarousError ErrorMsg
+    for err in s:errs
+        call matchadd('GrammarousError', grammarous#generate_highlight_pattern(err), 999)
+    endfor
 endfunction
 
 function! s:source.change_candidates(args, context)
-    return map(copy(b:grammarous_result), '{
-                \   "word" : printf("Error:   %s\nContext: %s\nCorrect: %s", v:val.msg, v:val.context, substitute(v:val.replacements, "#", ", ", "g")),
+    return map(copy(s:errs), '{
+                \   "word" : printf("Error:   %s\nContext: %s\nCorrect: %s", v:val.msg, v:val.context, split(v:val.replacements, "#")[0]),
                 \   "action__buffer_nr" : s:bufnr,
                 \   "action__line" : str2nr(v:val.fromy)+1,
                 \   "action__col" : str2nr(v:val.fromx)+1,

@@ -126,6 +126,19 @@ function! grammarous#invoke_check(...)
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
+function! s:sunitize(s)
+    return substitute(escape(a:s, "'\\"), ' ', '\\_\\s', 'g')
+endfunction
+
+function! grammarous#generate_highlight_pattern(error)
+    let line = a:error.fromy + 1
+    let prefix = a:error.contextoffset > 0 ? s:sunitize(a:error.context[: a:error.contextoffset-1]) : ''
+    let rest = a:error.context[a:error.contextoffset :]
+    let the_error = s:sunitize(rest[: a:error.errorlength])
+    let rest = s:sunitize(rest[a:error.errorlength+1 :])
+    return '\V' . prefix . '\zs' . the_error . '\ze' . rest
+endfunction
+
 function! grammarous#get_errors_from_xml(xml)
     return map(filter(a:xml.childNodes(), 'v:val.name ==# "error"'), 'v:val.attr')
 endfunction
