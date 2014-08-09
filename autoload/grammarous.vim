@@ -166,8 +166,8 @@ endfunction
 function! grammarous#check_current_buffer(...)
     let lang = a:0 > 0 ? a:1 : g:grammarous#default_lang
 
-    let result = grammarous#invoke_check(lang, getline(1, '$'))
-    return grammarous#highlight_errors_in_current_buffer(grammarous#get_errors_from_xml(result))
+    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(lang, getline(1, '$')))
+    return grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
 endfunction
 
 " FIXME: Parse result

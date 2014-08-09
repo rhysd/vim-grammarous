@@ -15,14 +15,12 @@ function! unite#sources#grammarous#define()
 endfunction
 
 function! s:source.hooks.on_init(args, context)
-    let lang = len(a:args) > 0 ? a:args[0] : 'en'
-    let s:errs = grammarous#get_errors_from_xml(grammarous#invoke_check(lang, getline(1, '$')))
-    call grammarous#highlight_errors_in_current_buffer(s:errs)
+    call call('grammarous#check_current_buffer', a:args)
     let s:bufnr = bufnr('%')
 endfunction
 
 function! s:source.hooks.on_close(args, context)
-    unlet! s:errs
+    unlet! b:grammarous_result
     if get(a:context, 'no_quit', 0)
         execute bufwinnr(s:bufnr) . 'wincmd w'
         call grammarous#reset_highlights()
@@ -38,7 +36,7 @@ function! s:source.hooks.on_syntax(args, context)
 endfunction
 
 function! s:source.change_candidates(args, context)
-    return map(s:errs, '{
+    return map(copy(b:grammarous_result), '{
                 \   "word" : printf("Error:   %s\nContext: %s\nCorrect: %s", v:val.msg, v:val.context, substitute(v:val.replacements, "#", ", ", "g")),
                 \   "action__buffer_nr" : s:bufnr,
                 \   "action__line" : str2nr(v:val.fromy)+1,
