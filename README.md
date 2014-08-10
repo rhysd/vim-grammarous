@@ -6,6 +6,11 @@ vim-grammarous is a powerful grammar checker in Vim.  Simply do `:GrammarousChec
 ![screenshot](http://gifzo.net/FNmJMaFgjY.gif)
 
 
+## Commands
+
+- `:GrammarousCheck [--lang={lang}] [--(no-)preview]` : Execute the grammar checker for current buffer.
+- `:GrammarousReset` : Reset the current check.
+
 ## Mappings in the information window
 
 ### Mapping in the information window
