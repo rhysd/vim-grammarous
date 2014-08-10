@@ -3,6 +3,7 @@ set cpo&vim
 
 let s:V = vital#of('grammarous')
 let s:XML = s:V.import('Web.XML')
+let s:O = s:V.import('OptionParser')
 
 let g:grammarous#root = fnamemodify(expand('<sfile>'), ':p:h:h')
 let g:grammarous#jar_dir = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
@@ -181,10 +182,28 @@ function! grammarous#reset_highlights()
     endfor
 endfunction
 
-function! grammarous#check_current_buffer(...)
-    let lang = a:0 > 0 ? a:1 : g:grammarous#default_lang
+function! grammarous#reset()
+    unlet! b:grammarous_result b:grammarous_preview_winnr
+    call grammarous#reset_highlights()
+endfunction
 
-    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(lang, getline(1, '$')))
+let s:opt_parser = s:O.new()
+                     \.on('--lang=VALUE', 'language to check', {'default' : g:grammarous#default_lang})
+                     \.on('--[no-]preview', 'enable auto preview', {'default' : 1})
+
+function! grammarous#complete_opt(arglead, cmdline, cursorpos)
+    return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
+endfunction
+
+function! grammarous#check_current_buffer(qargs)
+    if exists('b:grammarous_result')
+        call grammarous#reset_highlights()
+        redraw!
+    endif
+
+    let parsed = s:opt_parser.parse(a:qargs, 1, "")
+
+    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
     return grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
 endfunction
 
@@ -220,10 +239,6 @@ function! s:get_info_buffer(e)
         \   "    " . split(a:e.replacements, '#')[0]
         \ ],
         \ "\n")
-endfunction
-
-function! grammarous#reset()
-    unlet! b:grammarous_result b:grammarous_preview_winnr
 endfunction
 
 function! s:open_info_window(e, bufnr)
