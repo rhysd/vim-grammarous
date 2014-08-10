@@ -127,7 +127,7 @@ function! grammarous#invoke_check(...)
                 \ )
 
     let msg = printf("Checking grammater (lang: %s)...", lang)
-    echomsg msg
+    echo msg
     " FIXME: Do it in background
     let xml = vimproc#system(cmd)
     call delete(tmpfile)
