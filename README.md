@@ -8,7 +8,7 @@ vim-grammarous is a powerful grammar checker in Vim.  Simply do `:GrammarCheck` 
 
 ## Mappings in the information window
 
-### The information window
+### Mapping in the information window
 
 You can use some mappings in the information window, which is opened to show the detail of an error when the cursor move on an error.
 
