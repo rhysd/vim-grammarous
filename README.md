@@ -1,7 +1,7 @@
 vim-grammarous
 ==============
 
-vim-grammarous is a powerful grammar checker in Vim.  Simply do `:GrammarousCheck` to see the powerful checking.  This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 7+.
+vim-grammarous is a powerful grammar checker in Vim.  Simply do `:GrammarousCheck` to see the powerful checking.  This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 7+.  This plugin requires newer Vim, Vim 7.4p330+.
 
 ![screenshot](http://gifzo.net/FNmJMaFgjY.gif)
 
@@ -42,6 +42,11 @@ You can use some mappings in the information window, which is opened to show the
 ## Automatic installation
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.  If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
+
+## Requirements
+
+- Java7 (jdk-1.7, jre-1.7, ...)
+- Vim 7.4p330+
 
 ## License
 
