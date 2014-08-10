@@ -132,6 +132,7 @@ function! s:system(str, ...)
   endif
 
   let funcname = use_vimproc ? 'vimproc#system' : 'system'
+  let args     = use_vimproc ? map(args, 'escape(v:val, "#")') : args
   let output = call(funcname, args)
   let output = s:iconv(output, 'char', &encoding)
 
