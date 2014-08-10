@@ -202,6 +202,10 @@ function! grammarous#complete_opt(arglead, cmdline, cursorpos)
 endfunction
 
 function! s:do_auto_preview()
+    if exists('s:do_not_preview')
+        unlet s:do_not_preview
+        return
+    endif
     if !exists('b:grammarous_result') || empty(b:grammarous_result)
         autocmd! plugin-grammarous-auto-preview
         return
@@ -263,6 +267,13 @@ function! s:get_info_buffer(e)
         \ "\n")
 endfunction
 
+function! s:quit_info_window()
+    let s:do_not_preview = 1
+    unlet! b:grammarous_preview_winnr
+    quit!
+    unlet b:grammarous_preview_winnr
+endfunction
+
 function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
@@ -274,7 +285,7 @@ function! s:open_info_window(e, bufnr)
     syntax match GrammarousInfoError "Error:.*$"
     execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
     setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
-    nnoremap <buffer>q :<C-u>quit! <Bar> unlet! b:grammarous_preview_winnr<CR>
+    nnoremap <buffer>q :<C-u>call <SID>quit_info_window()<CR>
     return winnr()
 endfunction
 
