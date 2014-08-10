@@ -222,6 +222,10 @@ function! s:get_info_buffer(e)
         \ "\n")
 endfunction
 
+function! grammarous#reset()
+    unlet! b:grammarous_result b:grammarous_preview_winnr
+endfunction
+
 function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
@@ -237,7 +241,7 @@ function! s:open_info_window(e, bufnr)
     return winnr()
 endfunction
 
-function! grammarous#create_or_jump_to_info_window_of(errs)
+function! grammarous#create_update_info_window_of(errs)
     let e = grammarous#get_error_at(getpos('.')[1 : 2], a:errs)
     if empty(e)
         return
@@ -252,6 +256,10 @@ function! grammarous#create_or_jump_to_info_window_of(errs)
     let winnr = s:open_info_window(e, bufnr('%'))
     wincmd p
     let b:grammarous_preview_winnr = winnr
+endfunction
+
+function! grammarous#create_and_jump_to_info_window_of(errs)
+    call grammarous#create_update_info_window_of(a:errs)
     wincmd p
 endfunction
 
