@@ -232,7 +232,13 @@ function! grammarous#check_current_buffer(qargs)
     endif
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
-    return grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
+
+    if empty(b:grammarous_result)
+        echomsg "Yay! No grammatical error is detected."
+        return
+    endif
+
+    call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
 endfunction
 
 function! s:less_equal_position(p1, p2)
@@ -289,7 +295,8 @@ function! s:move_cursor_to(bufnr, line, col)
 endfunction
 
 function! grammarous#fixit(err)
-    if !s:move_cursor_to(b:grammarous_preview_original_bufnr, a:err.fromy+1, a:err.fromx+1)
+    let bufnr = get(b:, 'grammarous_preview_original_bufnr', bufnr('%'))
+    if empty(a:err) || !s:move_cursor_to(bufnr, a:err.fromy+1, a:err.fromx+1)
         return
     endif
 
@@ -310,6 +317,12 @@ function! grammarous#fixit(err)
         call setreg('g', save_g_reg, save_g_regtype)
         let &l:selection = sel_save
     endtry
+endfunction
+
+function! grammarous#fixall(errs)
+    for e in a:errs
+        call grammarous#fixit(e)
+    endfor
 endfunction
 
 function! s:open_info_window(e, bufnr)

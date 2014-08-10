@@ -16,7 +16,7 @@ endfunction
 
 function! s:source.hooks.on_init(args, context)
     let s:bufnr = bufnr('%')
-    let s:errs = b:grammarous_result
+    let s:errs = get(b:, 'grammarous_result', [])
 endfunction
 
 function! s:source.hooks.on_close(args, context)
