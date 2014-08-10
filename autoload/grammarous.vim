@@ -281,11 +281,35 @@ endfunction
 function! s:move_cursor_to(bufnr, line, col)
     let winnr = bufwinnr(a:bufnr)
     if winnr == -1
-        return
+        return 0
     endif
 
     execute winnr . 'wincmd w'
-    call cursor(a:line, a:col)
+    return cursor(a:line, a:col) != -1
+endfunction
+
+function! grammarous#fixit(err)
+    if !s:move_cursor_to(b:grammarous_preview_original_bufnr, a:err.fromy+1, a:err.fromx+1)
+        return
+    endif
+
+    let sel_save = &l:selection
+    let &l:selection = "inclusive"
+    let save_g_reg = getreg('g', 1)
+    let save_g_regtype = getregtype('g')
+    try
+        normal! v
+        call cursor(a:err.toy+1, a:err.tox)
+        normal! "gy
+        let from = getreg('g')
+        let to = split(a:err.replacements, '#')[0]
+        call setreg('g', to, 'v')
+        normal! gv"gp
+        echomsg printf("Fixed: '%s' -> '%s'", from, to)
+    finally
+        call setreg('g', save_g_reg, save_g_regtype)
+        let &l:selection = sel_save
+    endtry
 endfunction
 
 function! s:open_info_window(e, bufnr)
@@ -301,6 +325,7 @@ function! s:open_info_window(e, bufnr)
     setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
     nnoremap <silent><buffer>q :<C-u>call <SID>quit_info_window()<CR>
     nnoremap <silent><buffer><CR> :<C-u>call <SID>move_cursor_to(b:grammarous_preview_original_bufnr, b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
+    nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
     return winnr()
 endfunction
 
