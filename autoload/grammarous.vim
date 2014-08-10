@@ -341,7 +341,7 @@ function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
     let b:grammarous_preview_error = a:e
-    put =s:get_info_buffer(a:e)
+    silent put =s:get_info_buffer(a:e)
     silent 1delete _
     execute 1
     syntax match GrammarousInfoSection "\%(Context\|Correction\):"
