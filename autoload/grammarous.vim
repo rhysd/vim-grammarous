@@ -9,11 +9,14 @@ let g:grammarous#jar_dir = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/m
 let g:grammarous#jar_url = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
 let g:grammarous#java_cmd = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang = get(g:, 'grammarous#default_lang', 'en')
+let g:grammarous#info_window_height = get(g:, 'grammarous#info_window_height', &previewheight)
 
 " FIXME
 let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
 
-highlight link GrammarousError SpellBad
+highlight default link GrammarousError SpellBad
+highlight default link GrammarousInfoError ErrorMsg
+highlight default link GrammarousInfoSection Keyword
 
 function! grammarous#error(...)
     echohl ErrorMsg
@@ -183,6 +186,73 @@ function! grammarous#check_current_buffer(...)
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(lang, getline(1, '$')))
     return grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
+endfunction
+
+function! s:less_equal_position(p1, p2)
+    if a:p1[0] != a:p2[0]
+        return a:p1[0] <= a:p2[0]
+    endif
+
+    return a:p1[1] <= a:p2[1]
+endfunction
+
+function! grammarous#get_error_at(pos, errs)
+    for e in a:errs
+        let from = [e.fromy+1, e.fromx+1]
+        let to = [e.toy+1, e.tox+1]
+        if s:less_equal_position(from, a:pos) && s:less_equal_position(a:pos, to)
+            return e
+        endif
+    endfor
+    return {}
+endfunction
+
+function! s:get_info_buffer(e)
+    return join(
+        \ [
+        \   "Error: " . a:e.category,
+        \   "    " . a:e.msg,
+        \   "",
+        \   "Context:",
+        \   "    " . a:e.context,
+        \   "",
+        \   "Correction:",
+        \   "    " . split(a:e.replacements, '#')[0]
+        \ ],
+        \ "\n")
+endfunction
+
+function! s:open_info_window(e, bufnr)
+    execute g:grammarous#info_window_height . 'new'
+    let b:grammarous_preview_original_bufnr = a:bufnr
+    let b:grammarous_preview_error = a:e
+    put =s:get_info_buffer(a:e)
+    silent 1delete _
+    execute 1
+    syntax match GrammarousInfoSection "\%(Context\|Correction\):"
+    syntax match GrammarousInfoError "Error:.*$"
+    execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
+    setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
+    nnoremap <buffer>q :<C-u>quit! <Bar> unlet! b:grammarous_preview_winnr<CR>
+    return winnr()
+endfunction
+
+function! grammarous#create_or_jump_to_info_window_of(errs)
+    let e = grammarous#get_error_at(getpos('.')[1 : 2], a:errs)
+    if empty(e)
+        return
+    endif
+    if exists('b:grammarous_preview_winnr')
+        let w = winnr()
+        execute b:grammarous_preview_winnr . 'wincmd w'
+        wincmd c
+        execute w . 'wincmd w'
+    endif
+
+    let winnr = s:open_info_window(e, bufnr('%'))
+    wincmd p
+    let b:grammarous_preview_winnr = winnr
+    wincmd p
 endfunction
 
 " FIXME: Parse result
