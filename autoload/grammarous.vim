@@ -159,7 +159,7 @@ function! s:highlight_error(from, to)
     while line != a:to[0]
         call add(ids, s:matcherrpos(line))
     endwhile
-    call add(ids, s:matcherrpos(a:to[0], 1, a:to[1]))
+    call add(ids, s:matcherrpos(a:to[0], 1, a:to[1] - 1))
     return ids
 endfunction
 
