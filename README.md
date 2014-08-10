@@ -47,6 +47,10 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 
 - Java7 (jdk-1.7, jre-1.7, ...)
 
+## Contribution
+
+If you find some bugs, please report it to [issues page](https://github.com/rhysd/vim-grammarous/issues).  Pull requests are welcome. None of them is too short.
+
 ## License
 
     Copyright (c) 2014 rhysd
