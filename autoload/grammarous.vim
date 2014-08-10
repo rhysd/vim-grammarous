@@ -48,7 +48,7 @@ function! grammarous#error(...)
 endfunction
 
 function! s:find_jar(dir)
-    return fnamemodify(findfile('languagetool-commandline.jar', a:dir . '/**'), ':p')
+    return findfile('languagetool-commandline.jar', a:dir . '/**')
 endfunction
 
 function! s:prepare_jar(dir)
@@ -58,7 +58,7 @@ function! s:prepare_jar(dir)
             let jar = s:find_jar(a:dir)
         endif
     endif
-    return jar
+    return fnamemodify(jar, ':p')
 endfunction
 
 function! s:init()
