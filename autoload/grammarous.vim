@@ -276,8 +276,8 @@ function! grammarous#get_error_at(pos, errs)
     " XXX:
     " O(n).  I should use binary search?
     for e in a:errs
-        let from = [e.fromy+1, e.fromx+1]
-        let to = [e.toy+1, e.tox+1]
+        let from = [e.fromy+1, e.fromx]
+        let to = [e.toy+1, e.tox]
         if s:less_equal_position(from, a:pos) && s:less_equal_position(a:pos, to)
             return e
         endif
