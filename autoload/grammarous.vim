@@ -229,6 +229,7 @@ function! grammarous#complete_opt(arglead, cmdline, cursorpos)
 endfunction
 
 function! s:do_auto_preview()
+    let mode = mode()
     if exists('s:do_not_preview')
         unlet s:do_not_preview
         return
@@ -239,6 +240,9 @@ function! s:do_auto_preview()
     endif
 
     call grammarous#create_update_info_window_of(b:grammarous_result)
+    if mode ==? 'v' || mode == "\<C-v>"
+        normal! gv
+    endif
 endfunction
 
 function! grammarous#check_current_buffer(qargs)
