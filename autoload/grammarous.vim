@@ -19,6 +19,10 @@ highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
 highlight default link GrammarousInfoSection Keyword
 
+augroup plugin-grammarous-auto-preview
+    autocmd!
+augroup END
+
 function! grammarous#error(...)
     echohl ErrorMsg
     try
@@ -183,8 +187,9 @@ function! grammarous#reset_highlights()
 endfunction
 
 function! grammarous#reset()
-    unlet! b:grammarous_result b:grammarous_preview_winnr
     call grammarous#reset_highlights()
+    autocmd! plugin-grammarous-auto-preview
+    unlet! b:grammarous_result b:grammarous_preview_winnr
 endfunction
 
 let s:opt_parser = s:O.new()
@@ -195,6 +200,15 @@ function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
+function! s:do_auto_preview()
+    if !exists('b:grammarous_result') || empty(b:grammarous_result)
+        autocmd! plugin-grammarous-auto-preview
+        return
+    endif
+
+    call grammarous#create_update_info_window_of(b:grammarous_result)
+endfunction
+
 function! grammarous#check_current_buffer(qargs)
     if exists('b:grammarous_result')
         call grammarous#reset_highlights()
@@ -202,6 +216,9 @@ function! grammarous#check_current_buffer(qargs)
     endif
 
     let parsed = s:opt_parser.parse(a:qargs, 1, "")
+    if parsed.preview
+        autocmd CursorMoved <buffer> call <SID>do_auto_preview()
+    endif
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
     return grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
@@ -216,6 +233,8 @@ function! s:less_equal_position(p1, p2)
 endfunction
 
 function! grammarous#get_error_at(pos, errs)
+    " XXX:
+    " O(n).  I should use binary search?
     for e in a:errs
         let from = [e.fromy+1, e.fromx+1]
         let to = [e.toy+1, e.tox+1]
