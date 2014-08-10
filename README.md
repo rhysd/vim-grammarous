@@ -39,6 +39,10 @@ You can use some mappings in the information window, which is opened to show the
 - [unite.vim](https://github.com/rhysd/unite.vim/commit/5716eac38781e7a233c98f2a3d7aee8909326791)
 - [vim-quickrun](https://github.com/rhysd/vim-quickrun/commit/236c753e0572266670d176e667054d55ad52a3f3)
 
+## Automatic installation
+
+This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.  If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
+
 ## License
 
     Copyright (c) 2014 rhysd
