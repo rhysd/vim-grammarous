@@ -126,6 +126,8 @@ function! grammarous#invoke_check(...)
                 \ tmpfile
                 \ )
 
+    let msg = printf("Checking grammater (lang: %s)...", lang)
+    echomsg msg
     " FIXME: Do it in background
     let xml = vimproc#system(cmd)
     call delete(tmpfile)
@@ -134,6 +136,8 @@ function! grammarous#invoke_check(...)
         call grammarous#error("Command '%s' is failed:\n%s", cmd, xml)
         return []
     endif
+
+    redraw! | echomsg msg . 'done!'
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
@@ -274,6 +278,16 @@ function! s:quit_info_window()
     unlet b:grammarous_preview_winnr
 endfunction
 
+function! s:move_cursor_to(bufnr, line, col)
+    let winnr = bufwinnr(a:bufnr)
+    if winnr == -1
+        return
+    endif
+
+    execute winnr . 'wincmd w'
+    call cursor(a:line, a:col)
+endfunction
+
 function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
@@ -285,7 +299,8 @@ function! s:open_info_window(e, bufnr)
     syntax match GrammarousInfoError "Error:.*$"
     execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
     setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
-    nnoremap <buffer>q :<C-u>call <SID>quit_info_window()<CR>
+    nnoremap <silent><buffer>q :<C-u>call <SID>quit_info_window()<CR>
+    nnoremap <silent><buffer><CR> :<C-u>call <SID>move_cursor_to(b:grammarous_preview_original_bufnr, b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
     return winnr()
 endfunction
 
@@ -310,8 +325,6 @@ function! grammarous#create_and_jump_to_info_window_of(errs)
     call grammarous#create_update_info_window_of(a:errs)
     wincmd p
 endfunction
-
-" FIXME: Parse result
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
