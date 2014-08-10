@@ -17,6 +17,8 @@ let g:grammarous#info_win_direction = get(g:, 'grammarous#info_win_direction', '
 " FIXME
 let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
 
+let s:has_matchaddpos = has('*matchaddpos')
+
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
 highlight default link GrammarousInfoSection Keyword
@@ -189,13 +191,21 @@ function! s:highlight_error(from, to)
     return ids
 endfunction
 
+function! s:remove_3dots(str)
+    return substitute(substitute(a:str, '\.\.\.$', '', ''), '\\V\.\.\.', '', '')
+endfunction
+
 function! grammarous#highlight_errors_in_current_buffer(errs)
-    return map(copy(a:errs), "
-                \ s:highlight_error(
-                \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
-                \     [str2nr(v:val.toy)+1, str2nr(v:val.tox)+1],
-                \   )
-                \ ")
+    if s:has_matchaddpos
+        return map(copy(a:errs), "
+                    \ s:highlight_error(
+                    \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
+                    \     [str2nr(v:val.toy)+1, str2nr(v:val.tox)+1],
+                    \   )
+                    \ ")
+    else
+        return map(copy(a:errs), 'matchadd("GrammarousError", s:remove_3dots(grammarous#generate_highlight_pattern(v:val)), 999)')
+    endif
 endfunction
 
 function! grammarous#reset_highlights()
