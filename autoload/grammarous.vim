@@ -143,6 +143,12 @@ function! grammarous#invoke_check(...)
         return []
     endif
 
+    let xml = substitute(xml, '&quot;', '"',  'g')
+    let xml = substitute(xml, '&apos;', "'",  'g')
+    let xml = substitute(xml, '&gt;',   '>',  'g')
+    let xml = substitute(xml, '&lt;',   '<',  'g')
+    let xml = substitute(xml, '&amp;',  '\&', 'g')
+
     redraw! | echomsg msg . 'done!'
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
