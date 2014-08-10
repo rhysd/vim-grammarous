@@ -20,6 +20,12 @@ highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
 highlight default link GrammarousInfoSection Keyword
 
+augroup pluging-rammarous-highlight
+    autocmd ColorScheme * highlight default link GrammarousError SpellBad
+    autocmd ColorScheme * highlight default link GrammarousInfoError ErrorMsg
+    autocmd ColorScheme * highlight default link GrammarousInfoSection Keyword
+augroup END
+
 augroup plugin-grammarous-auto-preview
     autocmd!
 augroup END
