@@ -13,11 +13,10 @@ let g:grammarous#java_cmd = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang = get(g:, 'grammarous#default_lang', 'en')
 let g:grammarous#info_window_height = get(g:, 'grammarous#info_window_height', 10)
 let g:grammarous#info_win_direction = get(g:, 'grammarous#info_win_direction', 'botright')
+let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', has('*matchaddpos'))
 
 " FIXME
 let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
-
-let s:has_matchaddpos = has('*matchaddpos')
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -196,7 +195,7 @@ function! s:remove_3dots(str)
 endfunction
 
 function! grammarous#highlight_errors_in_current_buffer(errs)
-    if s:has_matchaddpos
+    if !g:grammarous#use_fallback_highlight
         return map(copy(a:errs), "
                     \ s:highlight_error(
                     \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
