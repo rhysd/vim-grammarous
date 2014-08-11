@@ -21,23 +21,24 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 
 You can use some mappings in the information window, which is opened to show the detail of an error when the cursor move on an error.
 
-| Mappings | Description                       |
-| -------- |:--------------------------------- |
-|   `q`    | Quit the info window              |
-|  `<CR>`  | Move to the location of the error |
-|   `f`    | Fix the error __automatically__   |
+| Mappings | Description                              |
+| -------- |:---------------------------------------- |
+|   `q`    | Quit the info window                     |
+|  `<CR>`  | Move to the location of the error        |
+|   `f`    | Fix the error __automatically__          |
+|   `r`    | Remove the error from the checked buffer |
 
 ### `<Plug>` mappings to execute anywhere
 
 | Mappings                                 | Description                                          |
-| ---------------------------------------- |:---------------------------------------------------- |
+| -----------------------------------------|:---------------------------------------------------- |
 | `<Plug>(grammarous-move-to-info-window)` | Move the cursor to the info window                   |
 | `<Plug>(grammarous-open-info-window)`    | Open the info window for under the cursor            |
 | `<Plug>(grammarous-reset)`               | Reset the current check                              |
 | `<Plug>(grammarous-fixit)`               | Fix the error under the cursor automatically         |
 | `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer automatically |
 | `<Plug>(grammarous-close-info-window)`   | Close the information window from checked buffer     |
-
+| `<Plug>(grammarous-remove-error)`        | Remove the error under the cursor                    |
 ## Fix examples
 
 - [vim-themis](https://github.com/rhysd/vim-themis/commit/b2f838b29f47180ccee50488e01d6774a21d0c03)

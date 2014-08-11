@@ -191,14 +191,24 @@ endfunction
 
 function! grammarous#highlight_errors_in_current_buffer(errs)
     if !g:grammarous#use_fallback_highlight
-        return map(copy(a:errs), "
-                    \ s:highlight_error(
-                    \     [str2nr(v:val.fromy)+1, str2nr(v:val.fromx)+1],
-                    \     [str2nr(v:val.toy)+1, str2nr(v:val.tox)+1],
-                    \   )
-                    \ ")
+        for e in a:errs
+            call extend(e, {
+                    \ 'id' : s:highlight_error(
+                    \       [str2nr(e.fromy)+1, str2nr(e.fromx)+1],
+                    \       [str2nr(e.toy)+1, str2nr(e.tox)+1],
+                    \     )
+                    \ })
+        endfor
     else
-        return map(copy(a:errs), 'matchadd("GrammarousError", s:remove_3dots(grammarous#generate_highlight_pattern(v:val)), 999)')
+        for e in a:errs
+            call extend(e, {
+                    \ 'id' : matchadd(
+                    \       "GrammarousError",
+                    \       s:remove_3dots(grammarous#generate_highlight_pattern(e)),
+                    \       999
+                    \     )
+                    \ })
+        endfor
     endif
 endfunction
 
@@ -314,19 +324,8 @@ function! s:quit_info_window()
     unlet b:grammarous_preview_bufnr
 endfunction
 
-function! s:move_cursor_to(bufnr, line, col)
-    let winnr = bufwinnr(a:bufnr)
-    if winnr == -1
-        return 0
-    endif
-
-    execute winnr . 'wincmd w'
-    return cursor(a:line, a:col) != -1
-endfunction
-
 function! grammarous#fixit(err)
-    let bufnr = get(b:, 'grammarous_preview_original_bufnr', bufnr('%'))
-    if empty(a:err) || !s:move_cursor_to(bufnr, a:err.fromy+1, a:err.fromx+1)
+    if empty(a:err) || !s:move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
         return
     endif
 
@@ -355,6 +354,17 @@ function! grammarous#fixall(errs)
     endfor
 endfunction
 
+function! s:map_remove_error_from_info_window()
+    let e = b:grammarous_preview_error
+    if !s:move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    call grammarous#remove_error(e, b:grammarous_result)
+endfunction
+
 function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
@@ -367,8 +377,9 @@ function! s:open_info_window(e, bufnr)
     execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
     setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
     nnoremap <silent><buffer>q :<C-u>call <SID>quit_info_window()<CR>
-    nnoremap <silent><buffer><CR> :<C-u>call <SID>move_cursor_to(b:grammarous_preview_original_bufnr, b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
+    nnoremap <silent><buffer><CR> :<C-u>call <SID>move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
     nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
+    nnoremap <silent><buffer>r :<C-u>call <SID>map_remove_error_from_info_window()<CR>
     return bufnr('%')
 endfunction
 
@@ -380,6 +391,39 @@ function! s:lookup_preview_bufnr()
         endif
     endfor
     return -1
+endfunction
+
+function! s:move_to_pos(pos)
+    let p = type(a:pos[0]) == type([]) ? a:pos[0] : a:pos
+    return cursor(a:pos[0], a:pos[1]) != -1
+endfunction
+
+function! s:move_to(buf, pos)
+    let winnr = bufwinnr(a:buf)
+    if winnr == -1
+        return 0
+    endif
+
+    execute winnr . 'wincmd w'
+    return s:move_to_pos(a:pos)
+endfunction
+
+function! s:move_to_checked_buf(...)
+    if exists('b:grammarous_result')
+        return s:move_to_pos(a:000)
+    endif
+
+    if exists('b:grammarous_preview_original_bufnr')
+        return s:move_to(b:grammarous_preview_original_bufnr, a:000)
+    endif
+
+    for b in tabpagebuflist()
+        if !empty(getbufvar(b, 'grammarous_result', []))
+            return s:move_to(b, a:000)
+        endif
+    endfor
+
+    return 0
 endfunction
 
 function! grammarous#close_info_window()
@@ -423,6 +467,32 @@ endfunction
 function! grammarous#create_and_jump_to_info_window_of(errs)
     call grammarous#create_update_info_window_of(a:errs)
     wincmd p
+endfunction
+
+function! grammarous#remove_error(e, errs)
+    let result = matchdelete(a:e.id)
+    if result == -1
+        return 0
+    endif
+
+    for i in range(len(a:errs))
+        if a:errs[i].id == a:e.id
+            call grammarous#close_info_window()
+            unlet a:errs[i]
+            return 1
+        endif
+    endfor
+
+    return 0
+endfunction
+
+function! grammarous#remove_error_at(pos, errs)
+    let e = grammarous#get_error_at(a:pos, a:errs)
+    if empty(e)
+        return 0
+    endif
+
+    return grammarous#remove_error(e, a:errs)
 endfunction
 
 let &cpo = s:save_cpo
