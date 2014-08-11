@@ -204,7 +204,7 @@ function! s:highlight_error(from, to)
 endfunction
 
 function! s:remove_3dots(str)
-    return substitute(substitute(a:str, '\.\.\.$', '', ''), '\\V\.\.\.', '', '')
+    return substitute(substitute(a:str, '\.\.\.$', '', ''), '\\V\zs\.\.\.', '', '')
 endfunction
 
 function! grammarous#highlight_errors_in_current_buffer(errs)
