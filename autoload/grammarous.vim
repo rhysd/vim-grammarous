@@ -216,8 +216,9 @@ endfunction
 
 function! grammarous#reset()
     call grammarous#reset_highlights()
-    autocmd! plugin-grammarous-auto-preview
-    unlet! b:grammarous_result b:grammarous_preview_winnr
+    silent! autocmd! plugin-grammarous-auto-preview
+    call grammarous#close_info_window()
+    unlet! b:grammarous_result b:grammarous_preview_bufnr
 endfunction
 
 let s:opt_parser = s:O.new()
@@ -306,9 +307,8 @@ endfunction
 
 function! s:quit_info_window()
     let s:do_not_preview = 1
-    unlet! b:grammarous_preview_winnr
     quit!
-    unlet b:grammarous_preview_winnr
+    unlet b:grammarous_preview_bufnr
 endfunction
 
 function! s:move_cursor_to(bufnr, line, col)
@@ -366,7 +366,25 @@ function! s:open_info_window(e, bufnr)
     nnoremap <silent><buffer>q :<C-u>call <SID>quit_info_window()<CR>
     nnoremap <silent><buffer><CR> :<C-u>call <SID>move_cursor_to(b:grammarous_preview_original_bufnr, b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
     nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
-    return winnr()
+    return bufnr('%')
+endfunction
+
+function! grammarous#close_info_window()
+    let w = winnr()
+    if !exists(b:grammarous_preview_bufnr)
+        return 0
+    endif
+
+    let pw = bufwinnr(b:grammarous_preview_bufnr)
+    if pw == -1
+        return 0
+    end
+
+    execute pw . 'wincmd w'
+    wincmd c
+    execute w . 'wincmd w'
+
+    return 1
 endfunction
 
 function! grammarous#create_update_info_window_of(errs)
@@ -374,16 +392,13 @@ function! grammarous#create_update_info_window_of(errs)
     if empty(e)
         return
     endif
-    if exists('b:grammarous_preview_winnr')
-        let w = winnr()
-        execute b:grammarous_preview_winnr . 'wincmd w'
-        wincmd c
-        execute w . 'wincmd w'
+
+    if exists('b:grammarous_preview_bufnr')
+        call grammarous#close_info_window()
     endif
 
-    let winnr = s:open_info_window(e, bufnr('%'))
+    let b:grammarous_preview_bufnr = s:open_info_window(e, bufnr('%'))
     wincmd p
-    let b:grammarous_preview_winnr = winnr
 endfunction
 
 function! grammarous#create_and_jump_to_info_window_of(errs)
