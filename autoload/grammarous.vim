@@ -13,7 +13,7 @@ let g:grammarous#java_cmd = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang = get(g:, 'grammarous#default_lang', 'en')
 let g:grammarous#info_window_height = get(g:, 'grammarous#info_window_height', 10)
 let g:grammarous#info_win_direction = get(g:, 'grammarous#info_win_direction', 'botright')
-let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', !has('*matchaddpos'))
+let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
 
 " FIXME
 let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
