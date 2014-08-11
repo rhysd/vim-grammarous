@@ -487,13 +487,15 @@ function! grammarous#create_and_jump_to_info_window_of(errs)
 endfunction
 
 function! grammarous#remove_error(e, errs)
-    let result = matchdelete(a:e.id)
-    if result == -1
-        return 0
-    endif
+    let ids = type(a:e.id) == type([]) ? a:e.id : [a:e.id]
+    for i in ids
+        if matchdelete(i) == -1
+            return 0
+        endif
+    endfor
 
     for i in range(len(a:errs))
-        if a:errs[i].id == a:e.id
+        if type(a:errs[i].id) == type(a:e.id) && a:errs[i].id == a:e.id
             call grammarous#close_info_window()
             unlet a:errs[i]
             return 1
