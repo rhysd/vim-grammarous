@@ -341,6 +341,9 @@ function! grammarous#fixit(err)
         let to = split(a:err.replacements, '#')[0]
         call setreg('g', to, 'v')
         normal! gv"gp
+
+        call grammarous#remove_error(a:err, b:grammarous_result)
+
         echomsg printf("Fixed: '%s' -> '%s'", from, to)
     finally
         call setreg('g', save_g_reg, save_g_regtype)
