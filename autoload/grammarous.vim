@@ -313,7 +313,9 @@ function! s:get_info_buffer(e)
         \   "    " . a:e.context,
         \   "",
         \   "Correction:",
-        \   "    " . split(a:e.replacements, '#')[0]
+        \   "    " . split(a:e.replacements, '#')[0],
+        \   "",
+        \   "Press '?' to show help",
         \ ],
         \ "\n")
 endfunction
@@ -324,7 +326,7 @@ function! s:quit_info_window()
     unlet b:grammarous_preview_bufnr
 endfunction
 
-function! grammarous#fixit(err)
+function! grammarous#fixit(err, ...)
     if empty(a:err) || !s:move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
         return
     endif
@@ -342,7 +344,7 @@ function! grammarous#fixit(err)
         call setreg('g', to, 'v')
         normal! gv"gp
 
-        call grammarous#remove_error(a:err, b:grammarous_result)
+        call grammarous#remove_error(a:err, get(a:, 1, b:grammarous_result))
 
         echomsg printf("Fixed: '%s' -> '%s'", from, to)
     finally
@@ -368,6 +370,17 @@ function! s:map_remove_error_from_info_window()
     call grammarous#remove_error(e, b:grammarous_result)
 endfunction
 
+function! s:map_show_info_window_help()
+    echo join([
+            \   "| Mappings | Description                              |",
+            \   "| -------- |:---------------------------------------- |",
+            \   "|    q     | Quit the info window                     |",
+            \   "|   <CR>   | Move to the location of the error        |",
+            \   "|    f     | Fix the error automatically              |",
+            \   "|    r     | Remove the error from the checked buffer |",
+            \ ], "\n")
+endfunction
+
 function! s:open_info_window(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
     let b:grammarous_preview_original_bufnr = a:bufnr
@@ -383,6 +396,7 @@ function! s:open_info_window(e, bufnr)
     nnoremap <silent><buffer><CR> :<C-u>call <SID>move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
     nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
     nnoremap <silent><buffer>r :<C-u>call <SID>map_remove_error_from_info_window()<CR>
+    nnoremap <buffer>? :<C-u>call <SID>map_show_info_window_help()<CR>
     return bufnr('%')
 endfunction
 
