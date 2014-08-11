@@ -16,9 +16,9 @@ function! grammarous#downloader#download(jar_dir)
     endif
 
     if executable('curl') && 0
-        let cmd = printf('curl -L -o %s %s', tmp_file, g:grammarous#jar_url)
+        let cmd = printf('curl -L -o %s %s 2>&1', tmp_file, g:grammarous#jar_url)
     elseif executable('wget')
-        let cmd = printf('wget -O %s %s', tmp_file, g:grammarous#jar_url)
+        let cmd = printf('wget -O %s %s 2>&1', tmp_file, g:grammarous#jar_url)
     else
         call s:error("'curl' and 'wget' are not found", a:jar_dir)
         return 0
