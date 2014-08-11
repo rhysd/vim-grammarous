@@ -210,22 +210,18 @@ endfunction
 function! grammarous#highlight_errors_in_current_buffer(errs)
     if !g:grammarous#use_fallback_highlight
         for e in a:errs
-            call extend(e, {
-                    \ 'id' : s:highlight_error(
-                    \       [str2nr(e.fromy)+1, str2nr(e.fromx)+1],
-                    \       [str2nr(e.toy)+1, str2nr(e.tox)+1],
-                    \     )
-                    \ })
+            let e.id = s:highlight_error(
+                    \   [str2nr(e.fromy)+1, str2nr(e.fromx)+1],
+                    \   [str2nr(e.toy)+1, str2nr(e.tox)+1],
+                    \ )
         endfor
     else
         for e in a:errs
-            call extend(e, {
-                    \ 'id' : matchadd(
-                    \       "GrammarousError",
-                    \       s:remove_3dots(grammarous#generate_highlight_pattern(e)),
-                    \       999
-                    \     )
-                    \ })
+            let e.id = matchadd(
+                    \   "GrammarousError",
+                    \   s:remove_3dots(grammarous#generate_highlight_pattern(e)),
+                    \   999
+                    \ )
         endfor
     endif
 endfunction
@@ -333,7 +329,7 @@ function! s:get_info_buffer(e)
         \   "Correction:",
         \   "    " . split(a:e.replacements, '#')[0],
         \   "",
-        \   "Press '?' to show help",
+        \   "Press '?' in this window to show help",
         \ ],
         \ "\n")
 endfunction
