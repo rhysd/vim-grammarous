@@ -134,7 +134,7 @@ function! grammarous#invoke_check(...)
                 \ tmpfile
                 \ )
 
-    let msg = printf("Checking grammater (lang: %s)...", lang)
+    let msg = printf("Checking grammater (lang: %s) ...", lang)
     echo msg
     " FIXME: Do it in background
     let xml = vimproc#system(cmd)
@@ -151,7 +151,6 @@ function! grammarous#invoke_check(...)
     let xml = substitute(xml, '&lt;',   '<',  'g')
     let xml = substitute(xml, '&amp;',  '\&', 'g')
 
-    redraw! | echomsg msg . 'done!'
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
@@ -263,9 +262,12 @@ function! grammarous#check_current_buffer(qargs)
     if empty(b:grammarous_result)
         echomsg "Yay! No grammatical error is detected."
         return
+    else
+        let len = len(b:grammarous_result)
+        echomsg printf("detected %d grammatical error%s", len, len > 1 ? 's' : '')
+        call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
     endif
 
-    call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
 endfunction
 
 function! s:less_equal_position(p1, p2)
