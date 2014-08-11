@@ -28,10 +28,6 @@ augroup pluging-rammarous-highlight
     autocmd ColorScheme * highlight default link GrammarousInfoSection Keyword
 augroup END
 
-augroup plugin-grammarous-auto-preview
-    autocmd!
-augroup END
-
 function! grammarous#error(...)
     echohl ErrorMsg
     try
@@ -229,19 +225,21 @@ endfunction
 
 function! s:do_auto_preview()
     let mode = mode()
+    if mode ==? 'v' || mode ==# "\<C-v>"
+        return
+    endif
+
     if exists('s:do_not_preview')
         unlet s:do_not_preview
         return
     endif
+
     if !exists('b:grammarous_result') || empty(b:grammarous_result)
         autocmd! plugin-grammarous-auto-preview
         return
     endif
 
     call grammarous#create_update_info_window_of(b:grammarous_result)
-    if mode ==? 'v' || mode == "\<C-v>"
-        normal! gv
-    endif
 endfunction
 
 function! grammarous#check_current_buffer(qargs)
@@ -254,17 +252,21 @@ function! grammarous#check_current_buffer(qargs)
 
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
-        autocmd CursorMoved <buffer> call <SID>do_auto_preview()
+        augroup plugin-grammarous-auto-preview
+            autocmd!
+            autocmd CursorMoved <buffer> call <SID>do_auto_preview()
+        augroup END
     endif
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
 
+    redraw!
     if empty(b:grammarous_result)
         echomsg "Yay! No grammatical error is detected."
         return
     else
         let len = len(b:grammarous_result)
-        echomsg printf("detected %d grammatical error%s", len, len > 1 ? 's' : '')
+        echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
         call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
     endif
 
@@ -370,20 +372,35 @@ function! s:open_info_window(e, bufnr)
     return bufnr('%')
 endfunction
 
+function! s:lookup_preview_bufnr()
+    for b in tabpagebuflist()
+        let the_buf = getbufvar(b, 'grammarous_preview_bufnr', -1)
+        if the_buf != -1
+            return the_buf
+        endif
+    endfor
+    return -1
+endfunction
+
 function! grammarous#close_info_window()
-    let w = winnr()
-    if !exists(b:grammarous_preview_bufnr)
-        return 0
+    let cur_win = winnr()
+    if exists('b:grammarous_preview_bufnr')
+        let prev_win = bufwinnr(b:grammarous_preview_bufnr)
+    else
+        let the_buf = s:lookup_preview_bufnr()
+        if the_buf == -1
+            return 0
+        endif
+        let prev_win = bufwinnr(the_buf)
     endif
 
-    let pw = bufwinnr(b:grammarous_preview_bufnr)
-    if pw == -1
+    if prev_win == -1
         return 0
     end
 
-    execute pw . 'wincmd w'
+    execute prev_win . 'wincmd w'
     wincmd c
-    execute w . 'wincmd w'
+    execute cur_win . 'wincmd w'
 
     return 1
 endfunction
@@ -398,8 +415,9 @@ function! grammarous#create_update_info_window_of(errs)
         call grammarous#close_info_window()
     endif
 
-    let b:grammarous_preview_bufnr = s:open_info_window(e, bufnr('%'))
+    let bufnr = s:open_info_window(e, bufnr('%'))
     wincmd p
+    let b:grammarous_preview_bufnr = bufnr
 endfunction
 
 function! grammarous#create_and_jump_to_info_window_of(errs)
