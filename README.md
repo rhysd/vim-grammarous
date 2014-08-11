@@ -9,6 +9,10 @@ vim-grammarous is a powerful grammar checker in Vim.  Simply do `:GrammarousChec
 ## Commands
 
 - `:GrammarousCheck [--lang={lang}] [--(no-)preview]` : Execute the grammar checker for current buffer.
+    1. It makes LanguageTool check grammar (It takes a while)
+    2. It highlights the locations of detected grammar errors
+    3. When you move the cursor on a location of error, it automatically shows the error with the information window.
+
 - `:GrammarousReset` : Reset the current check.
 
 ## Mappings in the information window
@@ -25,13 +29,14 @@ You can use some mappings in the information window, which is opened to show the
 
 ### `<Plug>` mappings to execute anywhere
 
-| Mappings                                 | Description                                  |
-| --------                                 |:-------------------------------------------- |
-| `<Plug>(grammarous-move-to-info-window)` | Move the cursor to the info window           |
-| `<Plug>(grammarous-open-info-window)`    | Open the info window for under the cursor    |
-| `<Plug>(grammarous-reset)`               | Reset the current check                      |
-| `<Plug>(grammarous-fixit)`               | Fix the error under the cursor automatically |
-| `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer       |
+| Mappings                                 | Description                                          |
+| ---------------------------------------- |:---------------------------------------------------- |
+| `<Plug>(grammarous-move-to-info-window)` | Move the cursor to the info window                   |
+| `<Plug>(grammarous-open-info-window)`    | Open the info window for under the cursor            |
+| `<Plug>(grammarous-reset)`               | Reset the current check                              |
+| `<Plug>(grammarous-fixit)`               | Fix the error under the cursor automatically         |
+| `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer automatically |
+| `<Plug>(grammarous-close-info-window)`   | Close the information window from checked buffer     |
 
 ## Fix examples
 
@@ -46,6 +51,7 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 ## Requirements
 
 - Java7 (jdk-1.7, jre-1.7, ...)
+- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional)
 
 ## Contribution
 
