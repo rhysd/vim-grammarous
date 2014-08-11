@@ -1,3 +1,8 @@
+function! s:error(about, dir)
+    let msg = printf("Could not download jar file because %s. Please download zip from %s and extract it to %s.", a:about, g:grammarous#jar_url, a:dir)
+    call grammarous#error(msg)
+endfunction
+
 function! grammarous#downloader#download(jar_dir)
     if !isdirectory(a:jar_dir)
         call mkdir(a:jar_dir, 'p')
@@ -5,20 +10,26 @@ function! grammarous#downloader#download(jar_dir)
 
     let tmp_file = tempname() . '.zip'
 
+    if !executable('unzip')
+        call s:error("'unzip' is not found", a:jar_dir)
+        return 0
+    endif
+
     if executable('curl') && 0
         let cmd = printf('curl -L -o %s %s', tmp_file, g:grammarous#jar_url)
     elseif executable('wget')
         let cmd = printf('wget -O %s %s', tmp_file, g:grammarous#jar_url)
     else
-        call grammarous#error('Can''t download jar file because "curl" and "wget" are not found. Please download jar from ' . g:grammarous#jar_url)
+        call s:error("'curl' and 'wget' are not found", a:jar_dir)
         return 0
     endif
 
     echomsg "Downloading jar file from " . g:grammarous#jar_url . "..."
 
-    let result = vimproc#system(printf('%s && unzip %s -d %s', cmd, tmp_file, a:jar_dir))
+    let cmd = printf('%s && unzip %s -d %s', cmd, tmp_file, a:jar_dir)
+    let result = vimproc#system(cmd)
     if vimproc#get_last_status()
-        call grammarous#error('Can''t download jar file download from. Please jar from ' . g:grammarous#jar_url . "\n" . result)
+        call s:error(printf("'%s' failed", cmd), a:jar_dir)
         return 0
     endif
 
