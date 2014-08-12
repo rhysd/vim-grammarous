@@ -296,25 +296,38 @@ function! grammarous#check_current_buffer(qargs)
 
 endfunction
 
-function! s:less_equal_position(p1, p2)
+function! s:less_position(p1, p2)
     if a:p1[0] != a:p2[0]
-        return a:p1[0] <= a:p2[0]
+        return a:p1[0] < a:p2[0]
     endif
 
-    return a:p1[1] <= a:p2[1]
+    return a:p1[1] < a:p2[1]
 endfunction
 
+function! s:binary_search_by_pos(errors, the_pos, start, end)
+    if a:start > a:end
+        return {}
+    endif
+
+    let m = (a:start + a:end) / 2
+    let from = [a:errors[m].fromy+1, a:errors[m].fromx+1]
+    let to = [a:errors[m].toy+1, a:errors[m].tox]
+
+    if s:less_position(a:the_pos, from)
+        return s:binary_search_by_pos(a:errors, a:the_pos, a:start, m-1)
+    endif
+
+    if s:less_position(to, a:the_pos)
+        return s:binary_search_by_pos(a:errors, a:the_pos, m+1, a:end)
+    endif
+
+    return a:errors[m]
+endfunction
+
+" Note:
+" It believes all errors are sorted by its position
 function! grammarous#get_error_at(pos, errs)
-    " XXX:
-    " O(n).  I should use binary search?
-    for e in a:errs
-        let from = [e.fromy+1, e.fromx]
-        let to = [e.toy+1, e.tox]
-        if s:less_equal_position(from, a:pos) && s:less_equal_position(a:pos, to)
-            return e
-        endif
-    endfor
-    return {}
+    return s:binary_search_by_pos(a:errs, a:pos, 0, len(a:errs)-1)
 endfunction
 
 function! s:get_info_buffer(e)
