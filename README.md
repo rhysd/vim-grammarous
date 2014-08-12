@@ -15,19 +15,21 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 
 - `:GrammarousReset` : Reset the current check.
 
+
 ## Mappings
 
 ### Mapping in the information window
 
 You can use some mappings in the information window, which is opened to show the detail of an error when the cursor move on an error.
 
-| Mappings | Description                              |
-| -------- |:---------------------------------------- |
-|   `q`    | Quit the info window                     |
-|  `<CR>`  | Move to the location of the error        |
-|   `f`    | Fix the error __automatically__          |
-|   `r`    | Remove the error from the checked buffer |
-|   `?`    | Show help of the mapping in info window  |
+| Mappings | Description                                    |
+| -------- |:---------------------------------------------- |
+|   `q`    | Quit the info window                           |
+|  `<CR>`  | Move to the location of the error              |
+|   `f`    | Fix the error __automatically__                |
+|   `r`    | Remove the error from the checked buffer       |
+|   `R`    | Disable the grammar rule in the checked buffer |
+|   `?`    | Show help of the mapping in info window        |
 
 ### `<Plug>` mappings to execute anywhere
 
@@ -40,6 +42,9 @@ You can use some mappings in the information window, which is opened to show the
 | `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer automatically |
 | `<Plug>(grammarous-close-info-window)`   | Close the information window from checked buffer     |
 | `<Plug>(grammarous-remove-error)`        | Remove the error under the cursor                    |
+| `<Plug>(grammarous-disable-rule)`        | Disable the grammar rule under the cursor            |
+
+
 ## Fix examples
 
 - [vim-themis](https://github.com/rhysd/vim-themis/commit/b2f838b29f47180ccee50488e01d6774a21d0c03)
@@ -50,14 +55,17 @@ You can use some mappings in the information window, which is opened to show the
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.  If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
 
+
 ## Requirements
 
 - Java7 (jdk-1.7, jre-1.7, ...)
 - [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional)
 
+
 ## Contribution
 
 If you find some bugs, please report it to [issues page](https://github.com/rhysd/vim-grammarous/issues).  Pull requests are welcome. None of them is too short.
+
 
 ## License
 

@@ -12,5 +12,6 @@ nnoremap <silent><Plug>(grammarous-fixit) :<C-u>call grammarous#fixit(grammarous
 nnoremap <silent><Plug>(grammarous-fixall) :<C-u>call grammarous#fixall(b:grammarous_result)<CR>
 nnoremap <silent><Plug>(grammarous-close-info-window) :<C-u>call grammarous#close_info_window()<CR>
 nnoremap <silent><Plug>(grammarous-remove-error) :<C-u>call grammarous#remove_error_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
+nnoremap <silent><Plug>(grammarous-disable-rule) :<C-u>call grammarous#disable_rule_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 
 let g:loaded_grammarous = 1

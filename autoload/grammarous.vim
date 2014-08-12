@@ -397,14 +397,26 @@ function! s:map_remove_error_from_info_window()
     call grammarous#remove_error(e, b:grammarous_result)
 endfunction
 
+function! s:map_disable_rule_from_info_window()
+    let e = b:grammarous_preview_error
+    if !s:move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    call grammarous#disable_rule(e.ruleId, b:grammarous_result)
+endfunction
+
 function! s:map_show_info_window_help()
     echo join([
-            \   "| Mappings | Description                              |",
-            \   "| -------- |:---------------------------------------- |",
-            \   "|    q     | Quit the info window                     |",
-            \   "|   <CR>   | Move to the location of the error        |",
-            \   "|    f     | Fix the error automatically              |",
-            \   "|    r     | Remove the error from the checked buffer |",
+            \   "| Mappings | Description                                    |",
+            \   "| -------- |:---------------------------------------------- |",
+            \   "|    q     | Quit the info window                           |",
+            \   "|   <CR>   | Move to the location of the error              |",
+            \   "|    f     | Fix the error automatically                    |",
+            \   "|    r     | Remove the error from the checked buffer       |",
+            \   "|    R     | Disable the grammar rule in the checked buffer |",
             \ ], "\n")
 endfunction
 
@@ -423,6 +435,7 @@ function! s:open_info_window(e, bufnr)
     nnoremap <silent><buffer><CR> :<C-u>call <SID>move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
     nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
     nnoremap <silent><buffer>r :<C-u>call <SID>map_remove_error_from_info_window()<CR>
+    nnoremap <silent><buffer>R :<C-u>call <SID>map_disable_rule_from_info_window()<CR>
     nnoremap <buffer>? :<C-u>call <SID>map_show_info_window_help()<CR>
     return bufnr('%')
 endfunction
@@ -513,13 +526,20 @@ function! grammarous#create_and_jump_to_info_window_of(errs)
     wincmd p
 endfunction
 
-function! grammarous#remove_error(e, errs)
+function! s:remove_error_highlight(e)
     let ids = type(a:e.id) == type([]) ? a:e.id : [a:e.id]
     for i in ids
         if matchdelete(i) == -1
             return 0
         endif
     endfor
+    return 1
+endfunction
+
+function! grammarous#remove_error(e, errs)
+    if !s:remove_error_highlight(a:e)
+        return 0
+    endif
 
     for i in range(len(a:errs))
         if type(a:errs[i].id) == type(a:e.id) && a:errs[i].id == a:e.id
@@ -539,6 +559,35 @@ function! grammarous#remove_error_at(pos, errs)
     endif
 
     return grammarous#remove_error(e, a:errs)
+endfunction
+
+function! grammarous#disable_rule(rule, errs)
+    call grammarous#close_info_window()
+
+    " Note:
+    " reverse() is needed because of removing elements in list
+    for i in reverse(range(len(a:errs)))
+        let e = a:errs[i]
+        if e.ruleId ==# a:rule
+            if !s:remove_error_highlight(e)
+                return 0
+            endif
+            unlet a:errs[i]
+        endif
+    endfor
+
+    echomsg "Disabled rule: " . a:rule
+
+    return 1
+endfunction
+
+function! grammarous#disable_rule_at(pos, errs)
+    let e = grammarous#get_error_at(a:pos, a:errs)
+    if empty(e)
+        return 0
+    endif
+
+    return grammarous#disable_rule(e.ruleId, a:errs)
 endfunction
 
 let &cpo = s:save_cpo
