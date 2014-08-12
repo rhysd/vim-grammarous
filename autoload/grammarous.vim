@@ -409,7 +409,7 @@ function! s:map_show_info_window_help()
 endfunction
 
 function! s:open_info_window(e, bufnr)
-    execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new'
+    execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new' '[Grammarous]\ ' . a:e.category
     let b:grammarous_preview_original_bufnr = a:bufnr
     let b:grammarous_preview_error = a:e
     silent put =s:get_info_buffer(a:e)
