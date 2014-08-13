@@ -18,7 +18,7 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 
 ## Mappings
 
-### Mapping in the information window
+### Local mappings in the information window
 
 You can use some mappings in the information window, which is opened to show the detail of an error when the cursor move on an error.
 
@@ -31,12 +31,15 @@ You can use some mappings in the information window, which is opened to show the
 |   `R`    | Disable the grammar rule in the checked buffer |
 |   `?`    | Show help of the mapping in info window        |
 
-### `<Plug>` mappings to execute anywhere
+### `<Plug>` mappings to execute actions anywhere
+
+vim-grammarous provides these global mappings in normal mode.  You can set them to your favorite keys by `:nmap`.
+However, above local mappings are enough to deal with grammar errors.  They are not always necessary.
 
 | Mappings                                 | Description                                          |
 | -----------------------------------------|:---------------------------------------------------- |
 | `<Plug>(grammarous-move-to-info-window)` | Move the cursor to the info window                   |
-| `<Plug>(grammarous-open-info-window)`    | Open the info window for under the cursor            |
+| `<Plug>(grammarous-open-info-window)`    | Open the info window for the error under the cursor  |
 | `<Plug>(grammarous-reset)`               | Reset the current check                              |
 | `<Plug>(grammarous-fixit)`               | Fix the error under the cursor automatically         |
 | `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer automatically |
