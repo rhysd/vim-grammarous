@@ -51,6 +51,11 @@ However, above local mappings are enough to deal with grammar errors.  They are 
 
 If you are [unite.vim](https://github.com/Shougo/unite.vim) user, `grammarous` unite source is available to look and search the error list incrementally.
 To the candidates of the list, you can do the actions which are the same as ones in the info window. (`fixit`, `remove error` and `disable rule`)
+Execute below command in the buffer already checked or you want to check.
+
+```
+:Unite grammarous
+```
 
 ## Fix examples
 
