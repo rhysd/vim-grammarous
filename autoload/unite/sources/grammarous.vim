@@ -28,7 +28,15 @@ function! s:source.hooks.on_init(args, context)
                 \       a:context.source__checked_bufnr
                 \   )
     if type(getbufvar(a:context.source__checked_bufnr, 'grammarous_result', 0)) == type(0)
-        execute 'GrammarousCheck' join(a:args, ' ')
+        let should_check_current_buf = a:context.source__checked_bufnr == bufnr('%')
+        if should_check_current_buf
+            execute 'GrammarousCheck' join(a:args, ' ')
+        else
+            let w = bufwinnr(a:context.source__checked_bufnr)
+            execute w . 'wincmd w'
+            execute 'GrammarousCheck' join(a:args, ' ')
+            wincmd p
+        endif
     endif
 endfunction
 
