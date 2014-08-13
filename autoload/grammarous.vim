@@ -234,8 +234,8 @@ endfunction
 
 function! grammarous#reset()
     call grammarous#reset_highlights()
-    silent! autocmd! plugin-grammarous-auto-preview
-    call grammarous#close_info_window()
+    call grammarous#info_win#stop_auto_preview()
+    call grammarous#info_win#close()
     unlet! b:grammarous_result b:grammarous_preview_bufnr
 endfunction
 
@@ -245,25 +245,6 @@ let s:opt_parser = s:O.new()
 
 function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
-endfunction
-
-function! s:do_auto_preview()
-    let mode = mode()
-    if mode ==? 'v' || mode ==# "\<C-v>"
-        return
-    endif
-
-    if exists('s:do_not_preview')
-        unlet s:do_not_preview
-        return
-    endif
-
-    if !exists('b:grammarous_result') || empty(b:grammarous_result)
-        autocmd! plugin-grammarous-auto-preview
-        return
-    endif
-
-    call grammarous#create_update_info_window_of(b:grammarous_result)
 endfunction
 
 function! grammarous#check_current_buffer(qargs)
@@ -276,10 +257,7 @@ function! grammarous#check_current_buffer(qargs)
 
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
-        augroup plugin-grammarous-auto-preview
-            autocmd!
-            autocmd CursorMoved <buffer> call <SID>do_auto_preview()
-        augroup END
+        call grammarous#info_win#start_auto_preview()
     endif
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
@@ -330,31 +308,8 @@ function! grammarous#get_error_at(pos, errs)
     return s:binary_search_by_pos(a:errs, a:pos, 0, len(a:errs)-1)
 endfunction
 
-function! s:get_info_buffer(e)
-    return join(
-        \ [
-        \   "Error: " . a:e.category,
-        \   "    " . a:e.msg,
-        \   "",
-        \   "Context:",
-        \   "    " . a:e.context,
-        \   "",
-        \   "Correction:",
-        \   "    " . split(a:e.replacements, '#')[0],
-        \   "",
-        \   "Press '?' in this window to show help",
-        \ ],
-        \ "\n")
-endfunction
-
-function! s:quit_info_window()
-    let s:do_not_preview = 1
-    quit!
-    unlet b:grammarous_preview_bufnr
-endfunction
-
 function! grammarous#fixit(err, ...)
-    if empty(a:err) || !s:move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
+    if empty(a:err) || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
         return
     endif
 
@@ -386,70 +341,6 @@ function! grammarous#fixall(errs)
     endfor
 endfunction
 
-function! s:map_remove_error_from_info_window()
-    let e = b:grammarous_preview_error
-    if !s:move_to_checked_buf(
-        \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx+1 )
-        return
-    endif
-
-    call grammarous#remove_error(e, b:grammarous_result)
-endfunction
-
-function! s:map_disable_rule_from_info_window()
-    let e = b:grammarous_preview_error
-    if !s:move_to_checked_buf(
-        \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx+1 )
-        return
-    endif
-
-    call grammarous#disable_rule(e.ruleId, b:grammarous_result)
-endfunction
-
-function! s:map_show_info_window_help()
-    echo join([
-            \   "| Mappings | Description                                    |",
-            \   "| -------- |:---------------------------------------------- |",
-            \   "|    q     | Quit the info window                           |",
-            \   "|   <CR>   | Move to the location of the error              |",
-            \   "|    f     | Fix the error automatically                    |",
-            \   "|    r     | Remove the error from the checked buffer       |",
-            \   "|    R     | Disable the grammar rule in the checked buffer |",
-            \ ], "\n")
-endfunction
-
-function! s:open_info_window(e, bufnr)
-    execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new' '[Grammarous]\ ' . a:e.category
-    let b:grammarous_preview_original_bufnr = a:bufnr
-    let b:grammarous_preview_error = a:e
-    silent put =s:get_info_buffer(a:e)
-    silent 1delete _
-    execute 1
-    syntax match GrammarousInfoSection "\%(Context\|Correction\):"
-    syntax match GrammarousInfoError "Error:.*$"
-    execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
-    setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
-    nnoremap <silent><buffer>q :<C-u>call <SID>quit_info_window()<CR>
-    nnoremap <silent><buffer><CR> :<C-u>call <SID>move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)<CR>
-    nnoremap <buffer>f :<C-u>call grammarous#fixit(b:grammarous_preview_error)<CR>
-    nnoremap <silent><buffer>r :<C-u>call <SID>map_remove_error_from_info_window()<CR>
-    nnoremap <silent><buffer>R :<C-u>call <SID>map_disable_rule_from_info_window()<CR>
-    nnoremap <buffer>? :<C-u>call <SID>map_show_info_window_help()<CR>
-    return bufnr('%')
-endfunction
-
-function! s:lookup_preview_bufnr()
-    for b in tabpagebuflist()
-        let the_buf = getbufvar(b, 'grammarous_preview_bufnr', -1)
-        if the_buf != -1
-            return the_buf
-        endif
-    endfor
-    return -1
-endfunction
-
 function! s:move_to_pos(pos)
     let p = type(a:pos[0]) == type([]) ? a:pos[0] : a:pos
     return cursor(a:pos[0], a:pos[1]) != -1
@@ -465,7 +356,7 @@ function! s:move_to(buf, pos)
     return s:move_to_pos(a:pos)
 endfunction
 
-function! s:move_to_checked_buf(...)
+function! grammarous#move_to_checked_buf(...)
     if exists('b:grammarous_result')
         return s:move_to_pos(a:000)
     endif
@@ -483,29 +374,6 @@ function! s:move_to_checked_buf(...)
     return 0
 endfunction
 
-function! grammarous#close_info_window()
-    let cur_win = winnr()
-    if exists('b:grammarous_preview_bufnr')
-        let prev_win = bufwinnr(b:grammarous_preview_bufnr)
-    else
-        let the_buf = s:lookup_preview_bufnr()
-        if the_buf == -1
-            return 0
-        endif
-        let prev_win = bufwinnr(the_buf)
-    endif
-
-    if prev_win == -1
-        return 0
-    end
-
-    execute prev_win . 'wincmd w'
-    wincmd c
-    execute cur_win . 'wincmd w'
-
-    return 1
-endfunction
-
 function! grammarous#create_update_info_window_of(errs)
     let e = grammarous#get_error_at(getpos('.')[1 : 2], a:errs)
     if empty(e)
@@ -513,10 +381,10 @@ function! grammarous#create_update_info_window_of(errs)
     endif
 
     if exists('b:grammarous_preview_bufnr')
-        call grammarous#close_info_window()
+        call grammarous#info_win#close()
     endif
 
-    let bufnr = s:open_info_window(e, bufnr('%'))
+    let bufnr = grammarous#info_win#open(e, bufnr('%'))
     wincmd p
     let b:grammarous_preview_bufnr = bufnr
 endfunction
@@ -543,7 +411,7 @@ function! grammarous#remove_error(e, errs)
 
     for i in range(len(a:errs))
         if type(a:errs[i].id) == type(a:e.id) && a:errs[i].id == a:e.id
-            call grammarous#close_info_window()
+            call grammarous#info_win#close()
             unlet a:errs[i]
             return 1
         endif
@@ -562,7 +430,7 @@ function! grammarous#remove_error_at(pos, errs)
 endfunction
 
 function! grammarous#disable_rule(rule, errs)
-    call grammarous#close_info_window()
+    call grammarous#info_win#close()
 
     " Note:
     " reverse() is needed because of removing elements in list
