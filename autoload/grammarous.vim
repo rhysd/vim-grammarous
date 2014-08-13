@@ -249,7 +249,7 @@ endfunction
 
 function! grammarous#check_current_buffer(qargs)
     if exists('b:grammarous_result')
-        call grammarous#reset_highlights()
+        call grammarous#reset()
         redraw!
     endif
 
