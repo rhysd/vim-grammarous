@@ -7,6 +7,7 @@ let s:source = {
             \ 'default_kind' : 'jump_list',
             \ 'default_action' : 'open',
             \ 'hooks' : {},
+            \ 'action_table' : {},
             \ 'syntax' : 'uniteSource__Grammarous',
             \ }
 
@@ -47,8 +48,41 @@ function! s:source.change_candidates(args, context)
                 \   "action__buffer_nr" : a:context.source__checked_bufnr,
                 \   "action__line" : str2nr(v:val.fromy)+1,
                 \   "action__col" : str2nr(v:val.fromx)+1,
+                \   "action__grammar_error" : v:val,
                 \   "is_multiline" : 1,
                 \}')
+endfunction
+
+function! s:prepare_bufvar(c)
+    let b:grammarous_preview_error = a:c.action__grammar_error
+    let b:grammarous_preview_original_bufnr = a:c.action__buffer_nr
+endfunction
+
+let s:source.action_table.fixit = {
+            \   'description' : 'Fix the error automatically',
+            \ }
+
+function! s:source.action_table.fixit.func(candidate)
+    call s:prepare_bufvar(a:candidate)
+    call grammarous#info_win#action_fixit()
+endfunction
+
+let s:source.action_table.remove_error = {
+            \   'description' : 'Remove the error without fix'
+            \ }
+
+function! s:source.action_table.remove_error.func(candidate)
+    call s:prepare_bufvar(a:candidate)
+    call grammarous#info_win#action_remove_error()
+endfunction
+
+let s:source.action_table.disable_rule = {
+            \   'description' : 'Disable the grammar rule in the checked buffer'
+            \ }
+
+function! s:source.action_table.disable_rule.func(candidate)
+    call s:prepare_bufvar(a:candidate)
+    call grammarous#info_win#action_disable_rule()
 endfunction
 
 let &cpo = s:save_cpo
