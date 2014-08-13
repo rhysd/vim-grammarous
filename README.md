@@ -27,7 +27,7 @@ You can use some mappings in the information window, which is opened to show the
 |   `q`    | Quit the info window                           |
 |  `<CR>`  | Move to the location of the error              |
 |   `f`    | Fix the error __automatically__                |
-|   `r`    | Remove the error from the checked buffer       |
+|   `r`    | Remove the error without fix                   |
 |   `R`    | Disable the grammar rule in the checked buffer |
 |   `?`    | Show help of the mapping in info window        |
 
