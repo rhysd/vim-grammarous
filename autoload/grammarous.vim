@@ -308,7 +308,7 @@ function! grammarous#get_error_at(pos, errs)
     return s:binary_search_by_pos(a:errs, a:pos, 0, len(a:errs)-1)
 endfunction
 
-function! grammarous#fixit(err, ...)
+function! grammarous#fixit(err)
     if empty(a:err) || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
         return
     endif

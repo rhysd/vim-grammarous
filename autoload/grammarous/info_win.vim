@@ -38,7 +38,7 @@ function! grammarous#info_win#action_help()
             \   "|    q     | Quit the info window                           |",
             \   "|   <CR>   | Move to the location of the error              |",
             \   "|    f     | Fix the error automatically                    |",
-            \   "|    r     | Remove the error from the checked buffer       |",
+            \   "|    r     | Remove the error without fix                   |",
             \   "|    R     | Disable the grammar rule in the checked buffer |",
             \ ], "\n")
 endfunction
