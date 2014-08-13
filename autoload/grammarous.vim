@@ -141,12 +141,6 @@ function! grammarous#invoke_check(...)
         return []
     endif
 
-    let xml = substitute(xml, '&quot;', '"',  'g')
-    let xml = substitute(xml, '&apos;', "'",  'g')
-    let xml = substitute(xml, '&gt;',   '>',  'g')
-    let xml = substitute(xml, '&lt;',   '<',  'g')
-    let xml = substitute(xml, '&amp;',  '\&', 'g')
-
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
@@ -163,26 +157,23 @@ function! grammarous#generate_highlight_pattern(error)
     return '\V' . prefix . '\zs' . the_error . '\ze' . rest
 endfunction
 
-" XXX:
-" This is bug of Vital.Web.XML? In some cases, key and value of element of
-" b:grammarous_result may be the same and some keys may not exist.
-function! s:is_valid_error(e)
-    return empty(filter([
-                \  'fromx',
-                \  'fromy',
-                \  'tox',
-                \  'toy',
-                \  'context',
-                \  'contextoffset',
-                \  'category',
-                \  'msg',
-                \  'replacements',
-                \  'errorlength',
-                \ ], '!has_key(a:e, v:val)'))
+function! s:unescape_xml(str)
+    let s = substitute(a:str, '&quot;', '"',  'g')
+    let s = substitute(s, '&apos;', "'",  'g')
+    let s = substitute(s, '&gt;',   '>',  'g')
+    let s = substitute(s, '&lt;',   '<',  'g')
+    return  substitute(s, '&amp;',  '\&', 'g')
+endfunction
+
+function! s:unescape_error(err)
+    for e in ['context', 'msg', 'replacements']
+        let a:err[e] = s:unescape_xml(a:err[e])
+    endfor
+    return a:err
 endfunction
 
 function! grammarous#get_errors_from_xml(xml)
-    return filter(map(filter(a:xml.childNodes(), 'v:val.name ==# "error"'), 'v:val.attr'), 's:is_valid_error(v:val)')
+    return map(filter(a:xml.childNodes(), 'v:val.name ==# "error"'), 's:unescape_error(v:val.attr)')
 endfunction
 
 function! s:matcherrpos(...)
