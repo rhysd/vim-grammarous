@@ -20,7 +20,15 @@ function! s:source.hooks.on_init(args, context)
     else
         let a:context.source__checked_bufnr = bufnr('%')
     endif
-    let a:context.source__checked_bufnr = getbufvar(a:context.source__checked_bufnr, 'grammarous_preview_original_bufnr', a:context.source__checked_bufnr)
+    let a:context.source__checked_bufnr
+                \ = getbufvar(
+                \       a:context.source__checked_bufnr,
+                \       'grammarous_preview_original_bufnr',
+                \       a:context.source__checked_bufnr
+                \   )
+    if type(getbufvar(a:context.source__checked_bufnr, 'grammarous_result', 0)) == type(0)
+        execute 'GrammarousCheck' join(a:args, ' ')
+    endif
 endfunction
 
 function! s:source.hooks.on_syntax(args, context)
