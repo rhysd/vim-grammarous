@@ -44,6 +44,10 @@ You can use some mappings in the information window, which is opened to show the
 | `<Plug>(grammarous-remove-error)`        | Remove the error under the cursor                    |
 | `<Plug>(grammarous-disable-rule)`        | Disable the grammar rule under the cursor            |
 
+### `grammarous` unite.vim source
+
+If you are [unite.vim](https://github.com/Shougo/unite.vim) user, `grammarous` unite source is available to look and search the error list incrementally.
+To the candidates of the list, you can do the actions which are the same as ones in the info window. (`fixit`, `remove error` and `disable rule`)
 
 ## Fix examples
 
@@ -58,9 +62,9 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 
 ## Requirements
 
-- Java7 (jdk-1.7, jre-1.7, ...)
-- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional)
-
+- Java7 (required)
+- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional but now required)
+- [unite.vim](https://github.com/Shougo/unite.vim) (optional)
 
 ## Contribution
 
