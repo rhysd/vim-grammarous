@@ -38,6 +38,8 @@ function! s:source.hooks.on_init(args, context)
             wincmd p
         endif
     endif
+
+    call grammarous#info_win#close()
 endfunction
 
 function! s:source.hooks.on_syntax(args, context)
