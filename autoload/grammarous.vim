@@ -397,7 +397,7 @@ endfunction
 function! s:remove_error_highlight(e)
     let ids = type(a:e.id) == type([]) ? a:e.id : [a:e.id]
     for i in ids
-        if matchdelete(i) == -1
+        silent! if matchdelete(i) == -1
             return 0
         endif
     endfor
