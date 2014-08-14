@@ -2,7 +2,7 @@ if (exists('g:loaded_grammarous') && g:loaded_grammarous) || &cp
     finish
 endif
 
-command! -nargs=* -bar -complete=customlist,grammarous#complete_opt GrammarousCheck call grammarous#check_current_buffer(<q-args>)
+command! -nargs=* -bar -range=% -complete=customlist,grammarous#complete_opt GrammarousCheck call grammarous#check_current_buffer(<q-args>, [<line1>, <line2>])
 command! -nargs=0 -bar GrammarousReset call grammarous#reset()
 
 nnoremap <silent><Plug>(grammarous-move-to-info-window) :<C-u>call grammarous#create_and_jump_to_info_window_of(b:grammarous_result)<CR>
@@ -13,5 +13,11 @@ nnoremap <silent><Plug>(grammarous-fixall) :<C-u>call grammarous#fixall(b:gramma
 nnoremap <silent><Plug>(grammarous-close-info-window) :<C-u>call grammarous#close_info_window()<CR>
 nnoremap <silent><Plug>(grammarous-remove-error) :<C-u>call grammarous#remove_error_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 nnoremap <silent><Plug>(grammarous-disable-rule) :<C-u>call grammarous#disable_rule_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
+
+try
+    call operator#user#define('grammarous', 'operator#grammarous#do')
+catch /^Vim\%((\a\+)\)\=:E117/
+    " vim-operator-user is not installed
+endtry
 
 let g:loaded_grammarous = 1

@@ -101,7 +101,7 @@ function! s:make_text(text)
     endif
 endfunction
 
-function! grammarous#invoke_check(...)
+function! grammarous#invoke_check(range_start, ...)
     let jar = s:init()
     if jar ==# ''
         return []
@@ -117,6 +117,11 @@ function! grammarous#invoke_check(...)
 
     let tmpfile = tempname()
     execute 'redir! >' tmpfile
+        let l = 1
+        while l < a:range_start
+            silent echo ""
+            let l += 1
+        endwhile
         silent echon text
     redir END
 
@@ -238,20 +243,20 @@ function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
-function! grammarous#check_current_buffer(qargs)
+function! grammarous#check_current_buffer(qargs, range)
     if exists('b:grammarous_result')
         call grammarous#reset()
         redraw!
     endif
 
-    let parsed = s:opt_parser.parse(a:qargs, 1, "")
+    let parsed = s:opt_parser.parse(a:qargs, a:range, "")
 
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
         call grammarous#info_win#start_auto_preview()
     endif
 
-    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.lang, getline(1, '$')))
+    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.__range__[0], parsed.lang, getline(parsed.__range__[0], parsed.__range__[1])))
 
     redraw!
     if empty(b:grammarous_result)

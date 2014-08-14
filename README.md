@@ -8,7 +8,7 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 
 ## Commands
 
-- `:GrammarousCheck [--lang={lang}] [--(no-)preview]` : Execute the grammar checker for current buffer.
+- `:[range]GrammarousCheck [--lang={lang}] [--(no-)preview]` : Execute the grammar checker for current buffer (when `[range]` is specified, the target is a text in the range).
     1. It makes LanguageTool check grammar (It takes a while)
     2. It highlights the locations of detected grammar errors
     3. When you move the cursor on a location of error, it automatically shows the error with the information window.
@@ -47,6 +47,14 @@ However, above local mappings are enough to deal with grammar errors.  They are 
 | `<Plug>(grammarous-remove-error)`        | Remove the error under the cursor                    |
 | `<Plug>(grammarous-disable-rule)`        | Disable the grammar rule under the cursor            |
 
+### Operator mappings
+
+Operator mapping checks grammar errors in the extent which the text object specify.  This mapping is available when [vim-operator-user](https://github.com/kana/vim-operator-user) is installed.
+
+| Mappings                      | Description                            |
+| ----------------------------- |:-------------------------------------- |
+| `<Plug>(operator-grammarous)` | Execute grammar check to a text object |
+
 ### `grammarous` unite.vim source
 
 If you are [unite.vim](https://github.com/Shougo/unite.vim) user, `grammarous` unite source is available to look and search the error list incrementally.
@@ -75,6 +83,7 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 - Java7 (required)
 - [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional but now required)
 - [unite.vim](https://github.com/Shougo/unite.vim) (optional)
+- [vim-operator-user](https://github.com/kana/vim-operator-user) (optional)
 
 ## Contribution
 
