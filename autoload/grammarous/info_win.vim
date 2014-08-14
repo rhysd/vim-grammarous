@@ -53,7 +53,7 @@ function! s:get_info_buffer(e)
         \   "    " . a:e.context,
         \   "",
         \   "Correction:",
-        \   "    " . split(a:e.replacements, '#')[0],
+        \   "    " . string(split(a:e.replacements, '#', 1)[0]),
         \   "",
         \   "Press '?' in this window to show help",
         \ ],
@@ -75,7 +75,7 @@ function! grammarous#info_win#open(e, bufnr)
     execute 1
     syntax match GrammarousInfoSection "\%(Context\|Correction\):"
     syntax match GrammarousInfoError "Error:.*$"
-    execute 'syntax match GrammarousError "' . grammarous#generate_highlight_pattern(a:e) . '"'
+    execute 'syntax match GrammarousError "' . escape(grammarous#generate_highlight_pattern(a:e), '"') . '"'
     setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
     nnoremap <silent><buffer>q :<C-u>call grammarous#info_win#action_quit()<CR>
     nnoremap <silent><buffer><CR> :<C-u>call grammarous#info_win#action_return()<CR>
