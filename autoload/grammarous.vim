@@ -313,7 +313,7 @@ function! grammarous#fixit(err)
         call cursor(a:err.toy+1, a:err.tox)
         normal! "gy
         let from = getreg('g')
-        let to = split(a:err.replacements, '#')[0]
+        let to = split(a:err.replacements, '#', 1)[0]
         call setreg('g', to, 'v')
         normal! gv"gp
 

@@ -53,7 +53,7 @@ function! s:get_info_buffer(e)
         \   "    " . a:e.context,
         \   "",
         \   "Correction:",
-        \   "    " . split(a:e.replacements, '#')[0],
+        \   "    " . string(split(a:e.replacements, '#', 1)[0]),
         \   "",
         \   "Press '?' in this window to show help",
         \ ],
