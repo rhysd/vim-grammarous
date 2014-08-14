@@ -2,7 +2,7 @@ if (exists('g:loaded_grammarous') && g:loaded_grammarous) || &cp
     finish
 endif
 
-command! -nargs=* -bar -complete=customlist,grammarous#complete_opt GrammarousCheck call grammarous#check_current_buffer(<q-args>)
+command! -nargs=* -bar -range=% -complete=customlist,grammarous#complete_opt GrammarousCheck call grammarous#check_current_buffer(<q-args>, [<line1>, <line2>])
 command! -nargs=0 -bar GrammarousReset call grammarous#reset()
 
 nnoremap <silent><Plug>(grammarous-move-to-info-window) :<C-u>call grammarous#create_and_jump_to_info_window_of(b:grammarous_result)<CR>
