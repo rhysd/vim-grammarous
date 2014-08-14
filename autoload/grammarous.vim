@@ -16,7 +16,7 @@ let g:grammarous#info_win_direction = get(g:, 'grammarous#info_win_direction', '
 let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
 
 " FIXME
-let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', ['WHITESPACE_RULE', 'EN_QUOTES'])
+let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -130,7 +130,7 @@ function! grammarous#invoke_check(range_start, ...)
                 \ g:grammarous#java_cmd,
                 \ jar,
                 \ &fileencoding ? &fileencoding : &encoding,
-                \ join(g:grammarous#disabled_rules, ','),
+                \ join(get(g:grammarous#disabled_rules, &filetype, g:grammarous#disabled_rules['*']), ','),
                 \ lang,
                 \ tmpfile
                 \ )
