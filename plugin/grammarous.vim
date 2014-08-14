@@ -14,4 +14,10 @@ nnoremap <silent><Plug>(grammarous-close-info-window) :<C-u>call grammarous#clos
 nnoremap <silent><Plug>(grammarous-remove-error) :<C-u>call grammarous#remove_error_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 nnoremap <silent><Plug>(grammarous-disable-rule) :<C-u>call grammarous#disable_rule_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 
+try
+    call operator#user#define('grammarous', 'operator#grammarous#do')
+catch /^Vim\%((\a\+)\)\=:E117/
+    " vim-operator-user is not installed
+endtry
+
 let g:loaded_grammarous = 1
