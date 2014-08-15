@@ -13,6 +13,8 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
     2. It highlights the locations of detected grammar errors
     3. When you move the cursor on a location of error, it automatically shows the error with the information window.
 
+    Please do `:GrammarousCheck --help` to show more detail about the command.
+
 - `:GrammarousReset` : Reset the current check.
 
 

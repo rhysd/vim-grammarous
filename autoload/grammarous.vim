@@ -234,8 +234,9 @@ function! grammarous#reset()
 endfunction
 
 let s:opt_parser = s:O.new()
-                     \.on('--lang=VALUE', 'language to check', {'default' : g:grammarous#default_lang})
-                     \.on('--[no-]preview', 'enable auto preview', {'default' : 1})
+                     \.on('--lang=VALUE',         'language to check',   {'default' : g:grammarous#default_lang})
+                     \.on('--[no-]preview',       'enable auto preview', {'default' : 1})
+                     \.on('--[no-]comments-only', 'check comment only',  {'default' : 0})
 
 function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
@@ -248,6 +249,9 @@ function! grammarous#check_current_buffer(qargs, range)
     endif
 
     let parsed = s:opt_parser.parse(a:qargs, a:range, "")
+    if has_key(parsed, 'help')
+        return
+    endif
 
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
