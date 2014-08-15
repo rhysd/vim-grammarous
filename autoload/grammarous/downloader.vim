@@ -27,9 +27,9 @@ function! grammarous#downloader#download(jar_dir)
     echomsg "Downloading jar file from " . g:grammarous#jar_url . "..."
 
     let cmd = printf('%s && unzip %s -d %s', cmd, tmp_file, a:jar_dir)
-    let result = vimproc#system(cmd)
+    let result = system(cmd)
     if vimproc#get_last_status()
-        call s:error(printf("'%s' failed", cmd), a:jar_dir)
+        call s:error(printf("'%s' failed: %s", cmd, result), a:jar_dir)
         return 0
     endif
 

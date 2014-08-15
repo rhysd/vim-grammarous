@@ -4,6 +4,7 @@ set cpo&vim
 let s:V = vital#of('grammarous')
 let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
+let s:P = s:V.import('Process')
 
 let g:grammarous#root = fnamemodify(expand('<sfile>'), ':p:h:h')
 silent! lockvar g:grammarous#root
@@ -27,6 +28,10 @@ augroup pluging-rammarous-highlight
     autocmd ColorScheme * highlight default link GrammarousInfoError ErrorMsg
     autocmd ColorScheme * highlight default link GrammarousInfoSection Keyword
 augroup END
+
+function! grammarous#_import_vital_modules()
+    return [s:XML, s:O, s:P]
+endfunction
 
 function! grammarous#error(...)
     echohl ErrorMsg
@@ -138,7 +143,7 @@ function! grammarous#invoke_check(range_start, ...)
     let msg = printf("Checking grammater (lang: %s) ...", lang)
     echo msg
     " FIXME: Do it in background
-    let xml = vimproc#system(cmd)
+    let xml = s:P.system(cmd)
     call delete(tmpfile)
 
     if vimproc#get_last_status()
