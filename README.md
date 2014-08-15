@@ -81,7 +81,7 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 ## Requirements
 
 - Java7 (required)
-- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (It will be optional but now required)
+- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (optional)
 - [unite.vim](https://github.com/Shougo/unite.vim) (optional)
 - [vim-operator-user](https://github.com/kana/vim-operator-user) (optional)
 
