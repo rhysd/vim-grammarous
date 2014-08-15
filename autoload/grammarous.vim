@@ -73,13 +73,6 @@ function! s:init()
         return ''
     endif
 
-    try
-        silent call vimproc#version()
-    catch
-        call grammarous#error('vimproc.vim is not found. Please install it from https://github.com/Shougo/vimproc.vim')
-        return ''
-    endtry
-
     if !executable(g:grammarous#java_cmd)
         call grammarous#error('"java" command is not found.  Please install java 1.7+ .')
         return ''
@@ -146,7 +139,7 @@ function! grammarous#invoke_check(range_start, ...)
     let xml = s:P.system(cmd)
     call delete(tmpfile)
 
-    if vimproc#get_last_status()
+    if s:P.get_last_status()
         call grammarous#error("Command '%s' is failed:\n%s", cmd, xml)
         return []
     endif

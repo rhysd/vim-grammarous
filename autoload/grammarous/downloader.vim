@@ -28,7 +28,7 @@ function! grammarous#downloader#download(jar_dir)
 
     let cmd = printf('%s && unzip %s -d %s', cmd, tmp_file, a:jar_dir)
     let result = system(cmd)
-    if vimproc#get_last_status()
+    if v:shell_error
         call s:error(printf("'%s' failed: %s", cmd, result), a:jar_dir)
         return 0
     endif
