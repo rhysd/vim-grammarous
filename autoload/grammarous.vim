@@ -260,6 +260,10 @@ function! grammarous#check_current_buffer(qargs, range)
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.__range__[0], parsed.lang, getline(parsed.__range__[0], parsed.__range__[1])))
 
+    if parsed['comments-only']
+        call filter(b:grammarous_result, 'synIDattr(synID(v:val.fromy, v:val.fromx, 0), "name") ==? "comment"')
+    endif
+
     redraw!
     if empty(b:grammarous_result)
         echomsg "Yay! No grammatical error is detected."
