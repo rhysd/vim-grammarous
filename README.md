@@ -83,6 +83,7 @@ Execute below command in the buffer already checked or you want to check.
 - [vim-themis](https://github.com/rhysd/vim-themis/commit/b2f838b29f47180ccee50488e01d6774a21d0c03)
 - [unite.vim](https://github.com/rhysd/unite.vim/commit/5716eac38781e7a233c98f2a3d7aee8909326791)
 - [vim-quickrun](https://github.com/rhysd/vim-quickrun/commit/236c753e0572266670d176e667054d55ad52a3f3)
+- [neosnippet.vim](https://github.com/rhysd/neosnippet/commit/c72e26e50ccf53f9d66a31fd9d70696c85c62873)
 
 ## FAQ
 
