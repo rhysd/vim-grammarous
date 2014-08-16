@@ -232,7 +232,6 @@ function! grammarous#reset()
     call grammarous#reset_highlights()
     call grammarous#info_win#stop_auto_preview()
     call grammarous#info_win#close()
-    unlet! b:grammarous_result b:grammarous_preview_bufnr
     if exists('s:saved_spell')
         let &l:spell = s:saved_spell
         unlet s:saved_spell
@@ -240,6 +239,7 @@ function! grammarous#reset()
     if has_key(g:grammarous#hooks, 'on_reset')
         call call(g:grammarous#hooks.on_reset, [b:grammarous_result], g:grammarous#hooks)
     endif
+    unlet! b:grammarous_result b:grammarous_preview_bufnr
 endfunction
 
 let s:opt_parser = s:O.new()
