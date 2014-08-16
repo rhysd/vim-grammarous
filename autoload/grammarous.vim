@@ -243,9 +243,10 @@ function! grammarous#reset()
 endfunction
 
 let s:opt_parser = s:O.new()
-                     \.on('--lang=VALUE',         'language to check',   {'default' : g:grammarous#default_lang})
-                     \.on('--[no-]preview',       'enable auto preview', {'default' : 1})
-                     \.on('--[no-]comments-only', 'check comment only',  {'default' : ''})
+    \.on('--lang=VALUE',               'language to check',   {'default' : g:grammarous#default_lang})
+    \.on('--[no-]preview',             'enable auto preview', {'default' : 1})
+    \.on('--[no-]comments-only',       'check comment only',  {'default' : ''})
+    \.on('--[no-]move-to-first-error', 'move to first error', {'default' : g:grammarous#move_to_first_error})
 
 function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
@@ -289,7 +290,7 @@ function! grammarous#check_current_buffer(qargs, range)
         let len = len(b:grammarous_result)
         echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
         call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
-        if g:grammarous#move_to_first_error
+        if parsed['move-to-first-error']
             call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
         endif
     endif
