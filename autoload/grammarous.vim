@@ -6,17 +6,18 @@ let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
 
-let g:grammarous#root                   = fnamemodify(expand('<sfile>'), ':p:h:h')
+let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
 silent! lockvar g:grammarous#root
-let g:grammarous#jar_dir                = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
-let g:grammarous#jar_url                = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
-let g:grammarous#java_cmd               = get(g:, 'grammarous#java_cmd', 'java')
-let g:grammarous#default_lang           = get(g:, 'grammarous#default_lang', 'en')
-let g:grammarous#info_window_height     = get(g:, 'grammarous#info_window_height', 10)
-let g:grammarous#info_win_direction     = get(g:, 'grammarous#info_win_direction', 'botright')
-let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
-let g:grammarous#disabled_rules         = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
+let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
+let g:grammarous#jar_url                         = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
+let g:grammarous#java_cmd                        = get(g:, 'grammarous#java_cmd', 'java')
+let g:grammarous#default_lang                    = get(g:, 'grammarous#default_lang', 'en')
+let g:grammarous#info_window_height              = get(g:, 'grammarous#info_window_height', 10)
+let g:grammarous#info_win_direction              = get(g:, 'grammarous#info_win_direction', 'botright')
+let g:grammarous#use_fallback_highlight          = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
+let g:grammarous#disabled_rules                  = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
 let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
+let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -230,6 +231,10 @@ function! grammarous#reset()
     call grammarous#info_win#stop_auto_preview()
     call grammarous#info_win#close()
     unlet! b:grammarous_result b:grammarous_preview_bufnr
+    if exists('s:saved_spell')
+        let &l:spell = s:saved_spell
+        unlet s:saved_spell
+    endif
 endfunction
 
 let s:opt_parser = s:O.new()
@@ -281,6 +286,10 @@ function! grammarous#check_current_buffer(qargs, range)
         call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
     endif
 
+    if g:grammarous#enable_spell_check
+        let s:saved_spell = &l:spell
+        setlocal spell
+    endif
 endfunction
 
 function! s:less_position(p1, p2)
