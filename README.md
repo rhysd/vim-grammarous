@@ -118,6 +118,26 @@ let g:grammarous#disabled_rules = {
 
 The rule names are displayed in Vim command line when you disable the rule in the info window or `<Plug>(grammarous-disable-rule)`.
 
+## I want to define above mappings as buffer local mappings after checking.
+
+`on_check` and `on_reset` are available.
+
+For example, below setting defines `<C-n>` and `<C-p>` mappings when the check is completed and clears them on the reset.
+
+```vim
+let g:grammarous#hooks = {}
+function! g:grammarous#hooks.on_check(errs)
+    nmap <buffer><C-n> <Plug>(grammarous-move-to-next-error)
+    nmap <buffer><C-p> <Plug>(grammarous-move-to-previous-error)
+endfunction
+
+function! g:grammarous#hooks.on_reset(errs)
+    nunmap <buffer><C-n>
+    nunmap <buffer><C-p>
+endfunction
+```
+
+
 ## Automatic installation
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.  If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
