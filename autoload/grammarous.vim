@@ -6,18 +6,17 @@ let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
 
-let g:grammarous#root = fnamemodify(expand('<sfile>'), ':p:h:h')
+let g:grammarous#root                   = fnamemodify(expand('<sfile>'), ':p:h:h')
 silent! lockvar g:grammarous#root
-let g:grammarous#jar_dir = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
-let g:grammarous#jar_url = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
-let g:grammarous#java_cmd = get(g:, 'grammarous#java_cmd', 'java')
-let g:grammarous#default_lang = get(g:, 'grammarous#default_lang', 'en')
-let g:grammarous#info_window_height = get(g:, 'grammarous#info_window_height', 10)
-let g:grammarous#info_win_direction = get(g:, 'grammarous#info_win_direction', 'botright')
+let g:grammarous#jar_dir                = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
+let g:grammarous#jar_url                = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
+let g:grammarous#java_cmd               = get(g:, 'grammarous#java_cmd', 'java')
+let g:grammarous#default_lang           = get(g:, 'grammarous#default_lang', 'en')
+let g:grammarous#info_window_height     = get(g:, 'grammarous#info_window_height', 10)
+let g:grammarous#info_win_direction     = get(g:, 'grammarous#info_win_direction', 'botright')
 let g:grammarous#use_fallback_highlight = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
-
-" FIXME
-let g:grammarous#disabled_rules = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
+let g:grammarous#disabled_rules         = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
+let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -124,11 +123,11 @@ function! grammarous#invoke_check(range_start, ...)
     redir END
 
     let cmd = printf(
-                \ "%s -jar %s -c %s -d '%s' -l %s --api %s",
+                \ "%s -jar %s -c %s -d %s -l %s --api %s",
                 \ g:grammarous#java_cmd,
                 \ jar,
                 \ &fileencoding ? &fileencoding : &encoding,
-                \ join(get(g:grammarous#disabled_rules, &filetype, g:grammarous#disabled_rules['*']), ','),
+                \ string(join(get(g:grammarous#disabled_rules, &filetype, g:grammarous#disabled_rules['*']), ',')),
                 \ lang,
                 \ tmpfile
                 \ )
@@ -234,11 +233,20 @@ function! grammarous#reset()
 endfunction
 
 let s:opt_parser = s:O.new()
-                     \.on('--lang=VALUE', 'language to check', {'default' : g:grammarous#default_lang})
-                     \.on('--[no-]preview', 'enable auto preview', {'default' : 1})
+                     \.on('--lang=VALUE',         'language to check',   {'default' : g:grammarous#default_lang})
+                     \.on('--[no-]preview',       'enable auto preview', {'default' : 1})
+                     \.on('--[no-]comments-only', 'check comment only',  {'default' : ''})
 
 function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
+endfunction
+
+function! s:is_comment_only(option)
+    if type(a:option) == type(0)
+        return a:option
+    endif
+
+    return get(g:grammarous#default_comments_only_filetypes, &filetype, g:grammarous#default_comments_only_filetypes['*'])
 endfunction
 
 function! grammarous#check_current_buffer(qargs, range)
@@ -248,6 +256,9 @@ function! grammarous#check_current_buffer(qargs, range)
     endif
 
     let parsed = s:opt_parser.parse(a:qargs, a:range, "")
+    if has_key(parsed, 'help')
+        return
+    endif
 
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
@@ -255,6 +266,10 @@ function! grammarous#check_current_buffer(qargs, range)
     endif
 
     let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.__range__[0], parsed.lang, getline(parsed.__range__[0], parsed.__range__[1])))
+
+    if s:is_comment_only(parsed['comments-only'])
+        call filter(b:grammarous_result, 'synIDattr(synID(v:val.fromy+1, v:val.fromx+1, 0), "name") =~? "comment"')
+    endif
 
     redraw!
     if empty(b:grammarous_result)

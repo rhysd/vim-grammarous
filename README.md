@@ -8,12 +8,23 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 
 ## Commands
 
-- `:[range]GrammarousCheck [--lang={lang}] [--(no-)preview]` : Execute the grammar checker for current buffer (when `[range]` is specified, the target is a text in the range).
-    1. It makes LanguageTool check grammar (It takes a while)
-    2. It highlights the locations of detected grammar errors
-    3. When you move the cursor on a location of error, it automatically shows the error with the information window.
+```
+:[range]GrammarousCheck [--lang={lang}] [--(no-)preview] [--(no-)comments-only]
+```
 
-- `:GrammarousReset` : Reset the current check.
+Execute the grammar checker for current buffer (when `[range]` is specified, the target is a text in the range).
+
+1. It makes LanguageTool check grammar (It takes a while)
+2. It highlights the locations of detected grammar errors
+3. When you move the cursor on a location of error, it automatically shows the error with the information window.
+
+Please do `:GrammarousCheck --help` to show more detail about the command.
+
+```
+:GrammarousReset
+```
+
+Reset the current check.
 
 
 ## Mappings
@@ -72,6 +83,35 @@ Execute below command in the buffer already checked or you want to check.
 - [vim-themis](https://github.com/rhysd/vim-themis/commit/b2f838b29f47180ccee50488e01d6774a21d0c03)
 - [unite.vim](https://github.com/rhysd/unite.vim/commit/5716eac38781e7a233c98f2a3d7aee8909326791)
 - [vim-quickrun](https://github.com/rhysd/vim-quickrun/commit/236c753e0572266670d176e667054d55ad52a3f3)
+
+## FAQ
+
+### I want to check comments only in source code by default.
+
+Plese use `g:grammarous#default_comments_only_filetypes`.
+
+For example, below setting makes grammar checker check comments only except for markdown and vim help.
+
+```vim
+let g:grammarous#default_comments_only_filetypes = {
+            \ '*' : 1, 'help' : 0, 'markdown' : 0,
+            \ }
+```
+
+### I want to disable some annoying rules
+
+Please use `g:grammarous#disabled_rules`.
+
+For example, below setting disables some rules for each filetypes. `*` means all filetypes, `help` means vim help.
+
+```vim
+let g:grammarous#disabled_rules = {
+            \ '*' : ['WHITESPACE_RULE', 'EN_QUOTES'],
+            \ 'help' : ['WHITESPACE_RULE', 'EN_QUOTES', 'SENTENCE_WHITESPACE', 'UPPERCASE_SENTENCE_START'],
+            \ }
+```
+
+The rule names are displayed in Vim command line when you disable the rule in the info window or `<Plug>(grammarous-disable-rule)`.
 
 ## Automatic installation
 
