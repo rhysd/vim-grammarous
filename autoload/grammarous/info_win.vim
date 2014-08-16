@@ -40,7 +40,31 @@ function! grammarous#info_win#action_help()
             \   "|    f     | Fix the error automatically                    |",
             \   "|    r     | Remove the error without fix                   |",
             \   "|    R     | Disable the grammar rule in the checked buffer |",
+            \   "|    n     | Move to the next error                         |",
+            \   "|    p     | Move to the previous error                     |",
             \ ], "\n")
+endfunction
+
+function! grammarous#info_win#action_next_error()
+    if !grammarous#move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    call grammarous#move_to_next_error(getpos('.')[1 : 2], b:grammarous_result)
+
+endfunction
+
+function! grammarous#info_win#action_previous_error()
+    if !grammarous#move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    call grammarous#move_to_previous_error(getpos('.')[1 : 2], b:grammarous_result)
+
 endfunction
 
 function! s:get_info_buffer(e)
@@ -104,7 +128,9 @@ function! grammarous#info_win#open(e, bufnr)
     nnoremap <buffer>f :<C-u>call grammarous#info_win#action_fixit()<CR>
     nnoremap <silent><buffer>r :<C-u>call grammarous#info_win#action_remove_error()<CR>
     nnoremap <silent><buffer>R :<C-u>call grammarous#info_win#action_disable_rule()<CR>
-    nnoremap <buffer>? :<C-u>call grammarous#info_win#action_help()<CR>
+    nnoremap <silent><buffer>n :<C-u>call grammarous#info_win#action_next_error()<CR>
+    nnoremap <silent><buffer>p :<C-u>call grammarous#info_win#action_previous_error()<CR>
+    nnoremap <silent><buffer>? :<C-u>call grammarous#info_win#action_help()<CR>
     return bufnr('%')
 endfunction
 
