@@ -40,6 +40,8 @@ You can use some mappings in the information window, which is opened to show the
 |   `f`    | Fix the error __automatically__                |
 |   `r`    | Remove the error without fix                   |
 |   `R`    | Disable the grammar rule in the checked buffer |
+|   `n`    | Move to the next error's location              |
+|   `p`    | Move to the previous error's location          |
 |   `?`    | Show help of the mapping in info window        |
 
 ### `<Plug>` mappings to execute actions anywhere
@@ -47,16 +49,18 @@ You can use some mappings in the information window, which is opened to show the
 vim-grammarous provides these global mappings in normal mode.  You can set them to your favorite keys by `:nmap`.
 However, above local mappings are enough to deal with grammar errors.  They are not always necessary.
 
-| Mappings                                 | Description                                          |
-| -----------------------------------------|:---------------------------------------------------- |
-| `<Plug>(grammarous-move-to-info-window)` | Move the cursor to the info window                   |
-| `<Plug>(grammarous-open-info-window)`    | Open the info window for the error under the cursor  |
-| `<Plug>(grammarous-reset)`               | Reset the current check                              |
-| `<Plug>(grammarous-fixit)`               | Fix the error under the cursor automatically         |
-| `<Plug>(grammarous-fixall)`              | Fix all the errors in a current buffer automatically |
-| `<Plug>(grammarous-close-info-window)`   | Close the information window from checked buffer     |
-| `<Plug>(grammarous-remove-error)`        | Remove the error under the cursor                    |
-| `<Plug>(grammarous-disable-rule)`        | Disable the grammar rule under the cursor            |
+| Mappings                                    | Description                                          |
+| -----------------------------------------   |:---------------------------------------------------- |
+| `<Plug>(grammarous-move-to-info-window)`    | Move the cursor to the info window                   |
+| `<Plug>(grammarous-open-info-window)`       | Open the info window for the error under the cursor  |
+| `<Plug>(grammarous-reset)`                  | Reset the current check                              |
+| `<Plug>(grammarous-fixit)`                  | Fix the error under the cursor automatically         |
+| `<Plug>(grammarous-fixall)`                 | Fix all the errors in a current buffer automatically |
+| `<Plug>(grammarous-close-info-window)`      | Close the information window from checked buffer     |
+| `<Plug>(grammarous-remove-error)`           | Remove the error under the cursor                    |
+| `<Plug>(grammarous-disable-rule)`           | Disable the grammar rule under the cursor            |
+| `<Plug>(grammarous-move-to-next-error)`     | Move cursor to the next error                        |
+| `<Plug>(grammarous-move-to-previous-error)` | Move cursor to the previous error                    |
 
 ### Operator mappings
 
