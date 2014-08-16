@@ -19,6 +19,7 @@ let g:grammarous#disabled_rules                  = get(g:, 'grammarous#disabled_
 let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
 let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
 let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_first_error', 1)
+let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {})
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -236,6 +237,9 @@ function! grammarous#reset()
         let &l:spell = s:saved_spell
         unlet s:saved_spell
     endif
+    if has_key(g:grammarous#hooks, 'on_reset')
+        call call(g:grammarous#hooks.on_reset, [b:grammarous_result], g:grammarous#hooks)
+    endif
 endfunction
 
 let s:opt_parser = s:O.new()
@@ -293,6 +297,10 @@ function! grammarous#check_current_buffer(qargs, range)
     if g:grammarous#enable_spell_check
         let s:saved_spell = &l:spell
         setlocal spell
+    endif
+
+    if has_key(g:grammarous#hooks, 'on_check')
+        call call(g:grammarous#hooks.on_check, [b:grammarous_result], g:grammarous#hooks)
     endif
 endfunction
 
