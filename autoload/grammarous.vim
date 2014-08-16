@@ -130,7 +130,7 @@ function! grammarous#invoke_check(range_start, ...)
                 \ g:grammarous#java_cmd,
                 \ jar,
                 \ &fileencoding ? &fileencoding : &encoding,
-                \ string(join(get(g:grammarous#disabled_rules, &filetype, g:grammarous#disabled_rules['*']), ',')),
+                \ string(join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ',')),
                 \ lang,
                 \ tmpfile
                 \ )
@@ -257,7 +257,11 @@ function! s:is_comment_only(option)
         return a:option
     endif
 
-    return get(g:grammarous#default_comments_only_filetypes, &filetype, g:grammarous#default_comments_only_filetypes['*'])
+    return get(
+        \   g:grammarous#default_comments_only_filetypes,
+        \   &filetype,
+        \   get(g:grammarous#default_comments_only_filetypes, '*', 0)
+        \ )
 endfunction
 
 function! grammarous#check_current_buffer(qargs, range)
@@ -276,7 +280,14 @@ function! grammarous#check_current_buffer(qargs, range)
         call grammarous#info_win#start_auto_preview()
     endif
 
-    let b:grammarous_result = grammarous#get_errors_from_xml(grammarous#invoke_check(parsed.__range__[0], parsed.lang, getline(parsed.__range__[0], parsed.__range__[1])))
+    let b:grammarous_result
+                \ = grammarous#get_errors_from_xml(
+                \       grammarous#invoke_check(
+                \           parsed.__range__[0],
+                \           parsed.lang,
+                \           getline(parsed.__range__[0], parsed.__range__[1])
+                \       )
+                \   )
 
     if s:is_comment_only(parsed['comments-only'])
         call filter(b:grammarous_result, 'synIDattr(synID(v:val.fromy+1, v:val.fromx+1, 0), "name") =~? "comment"')
