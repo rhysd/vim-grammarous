@@ -31,6 +31,30 @@ function! grammarous#info_win#action_disable_rule()
     call grammarous#disable_rule(e.ruleId, b:grammarous_result)
 endfunction
 
+function! grammarous#info_win#action_next_error()
+    if !grammarous#move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    if !grammarous#move_to_next_error(getpos('.')[1 : 2], b:grammarous_result)
+        wincmd p
+    endif
+endfunction
+
+function! grammarous#info_win#action_previous_error()
+    if !grammarous#move_to_checked_buf(
+        \ b:grammarous_preview_error.fromy+1,
+        \ b:grammarous_preview_error.fromx+1 )
+        return
+    endif
+
+    if !grammarous#move_to_previous_error(getpos('.')[1 : 2], b:grammarous_result)
+        wincmd p
+    endif
+endfunction
+
 function! grammarous#info_win#action_help()
     echo join([
             \   "| Mappings | Description                                    |",
@@ -43,28 +67,6 @@ function! grammarous#info_win#action_help()
             \   "|    n     | Move to the next error                         |",
             \   "|    p     | Move to the previous error                     |",
             \ ], "\n")
-endfunction
-
-function! grammarous#info_win#action_next_error()
-    if !grammarous#move_to_checked_buf(
-        \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx+1 )
-        return
-    endif
-
-    call grammarous#move_to_next_error(getpos('.')[1 : 2], b:grammarous_result)
-
-endfunction
-
-function! grammarous#info_win#action_previous_error()
-    if !grammarous#move_to_checked_buf(
-        \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx+1 )
-        return
-    endif
-
-    call grammarous#move_to_previous_error(getpos('.')[1 : 2], b:grammarous_result)
-
 endfunction
 
 function! s:get_info_buffer(e)
