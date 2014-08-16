@@ -399,10 +399,17 @@ function! grammarous#create_update_info_window_of(errs)
     endif
 
     if exists('b:grammarous_preview_bufnr')
-        call grammarous#info_win#close()
+        let winnr = bufwinnr(b:grammarous_preview_bufnr)
+        if winnr == -1
+            let bufnr = grammarous#info_win#open(e, bufnr('%'))
+        else
+            execute winnr . 'wincmd w'
+            let bufnr = grammarous#info_win#update(e)
+        endif
+    else
+        let bufnr = grammarous#info_win#open(e, bufnr('%'))
     endif
 
-    let bufnr = grammarous#info_win#open(e, bufnr('%'))
     wincmd p
     let b:grammarous_preview_bufnr = bufnr
 endfunction

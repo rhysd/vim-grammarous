@@ -66,8 +66,18 @@ function! grammarous#info_win#action_quit()
     unlet b:grammarous_preview_bufnr
 endfunction
 
+function! grammarous#info_win#update(e)
+    let b:grammarous_preview_error = a:e
+    silent normal! gg"_dG
+    silent put =s:get_info_buffer(a:e)
+    silent 1delete _
+    setlocal modified
+
+    return bufnr('%')
+endfunction
+
 function! grammarous#info_win#open(e, bufnr)
-    execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new' '[Grammarous]\ ' . a:e.category
+    execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new' '[Grammarous]'
     let b:grammarous_preview_original_bufnr = a:bufnr
     let b:grammarous_preview_error = a:e
     silent put =s:get_info_buffer(a:e)
@@ -76,7 +86,19 @@ function! grammarous#info_win#open(e, bufnr)
     syntax match GrammarousInfoSection "\%(Context\|Correction\):"
     syntax match GrammarousInfoError "Error:.*$"
     execute 'syntax match GrammarousError "' . escape(grammarous#generate_highlight_pattern(a:e), '"') . '"'
-    setlocal nonumber bufhidden=wipe buftype=nofile readonly nolist nobuflisted noswapfile nomodifiable nomodified
+    setlocal nonumber
+    setlocal bufhidden=hide
+    setlocal buftype=nofile
+    setlocal readonly
+    setlocal nolist
+    setlocal nobuflisted
+    setlocal noswapfile
+    setlocal nospell
+    setlocal nomodeline
+    setlocal nofoldenable
+    setlocal noreadonly
+    setlocal foldcolumn=0
+    setlocal nomodified
     nnoremap <silent><buffer>q :<C-u>call grammarous#info_win#action_quit()<CR>
     nnoremap <silent><buffer><CR> :<C-u>call grammarous#info_win#action_return()<CR>
     nnoremap <buffer>f :<C-u>call grammarous#info_win#action_fixit()<CR>
