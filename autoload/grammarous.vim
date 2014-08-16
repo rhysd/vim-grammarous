@@ -18,6 +18,7 @@ let g:grammarous#use_fallback_highlight          = get(g:, 'grammarous#use_fallb
 let g:grammarous#disabled_rules                  = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
 let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
 let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
+let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_first_error', 1)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -284,6 +285,9 @@ function! grammarous#check_current_buffer(qargs, range)
         let len = len(b:grammarous_result)
         echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
         call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
+        if g:grammarous#move_to_first_error
+            call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
+        endif
     endif
 
     if g:grammarous#enable_spell_check
@@ -365,12 +369,14 @@ function! s:move_to_pos(pos)
 endfunction
 
 function! s:move_to(buf, pos)
-    let winnr = bufwinnr(a:buf)
-    if winnr == -1
-        return 0
-    endif
+    if a:buf != bufnr('%')
+        let winnr = bufwinnr(a:buf)
+        if winnr == -1
+            return 0
+        endif
 
-    execute winnr . 'wincmd w'
+        execute winnr . 'wincmd w'
+    endif
     return s:move_to_pos(a:pos)
 endfunction
 
@@ -481,6 +487,28 @@ function! grammarous#disable_rule_at(pos, errs)
     endif
 
     return grammarous#disable_rule(e.ruleId, a:errs)
+endfunction
+
+function! grammarous#move_to_next_error(pos, errs)
+    for e in a:errs
+        let p = [e.fromy+1, e.fromx+1]
+        if s:less_position(a:pos, p)
+            return s:move_to_pos(p)
+        endif
+    endfor
+    call grammarous#error("No next error is found.")
+    return 0
+endfunction
+
+function! grammarous#move_to_previous_error(pos, errs)
+    for e in reverse(copy(a:errs))
+        let p = [e.fromy+1, e.fromx+1]
+        if s:less_position(p, a:pos)
+            return s:move_to_pos(p)
+        endif
+    endfor
+    call grammarous#error("No previous error is found.")
+    return 0
 endfunction
 
 let &cpo = s:save_cpo
