@@ -1,6 +1,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let g:unite#sources#grammarous#one_line = get(g:, 'unite#sources#grammarous#one_line', 0)
+
 let s:source = {
             \ 'name' : 'grammarous',
             \ 'description' : 'Show result of grammar check by vim-grammarous',
@@ -43,18 +45,33 @@ function! s:source.hooks.on_init(args, context)
 endfunction
 
 function! s:source.hooks.on_syntax(args, context)
-    syntax match uniteSource__GrammarousKeyword "\%(Context\|Correct\):" contained containedin=uniteSource__Grammarous
-    syntax keyword uniteSource__GrammarousError Error contained containedin=uniteSource__Grammarous
-    highlight default link uniteSource__GrammarousKeyword Keyword
-    highlight default link uniteSource__GrammarousError ErrorMsg
-    for err in getbufvar(a:context.source__checked_bufnr, 'grammarous_result', [])
-        call matchadd('GrammarousError', grammarous#generate_highlight_pattern(err), 999)
-    endfor
+    if g:unite#sources#grammarous#one_line
+        syntax region uniteSource__GrammarousError start="'" end="'" oneline contained containedin=uniteSource__Grammarous
+        syntax match uniteSource__GrammarousArrow "->" contained containedin=uniteSource__Grammarous
+        highlight default link uniteSource__GrammarousArrow Keyword
+        highlight default link uniteSource__GrammarousError ErrorMsg
+    else
+        syntax match uniteSource__GrammarousKeyword "\%(Context\|Correct\):" contained containedin=uniteSource__Grammarous
+        syntax keyword uniteSource__GrammarousError Error contained containedin=uniteSource__Grammarous
+        highlight default link uniteSource__GrammarousKeyword Keyword
+        highlight default link uniteSource__GrammarousError ErrorMsg
+        for err in getbufvar(a:context.source__checked_bufnr, 'grammarous_result', [])
+            call matchadd('GrammarousError', grammarous#generate_highlight_pattern(err), 999)
+        endfor
+    endif
+endfunction
+
+function! s:make_word(e)
+    if g:unite#sources#grammarous#one_line
+        return printf("'%s' -> %s", a:e.context[a:e.contextoffset : a:e.contextoffset+a:e.errorlength-1], a:e.msg)
+    else
+        return printf("Error:   %s\nContext: %s\nCorrect: %s", a:e.msg, a:e.context, split(a:e.replacements, "#", 1)[0])
+    endif
 endfunction
 
 function! s:source.change_candidates(args, context)
     return map(copy(getbufvar(a:context.source__checked_bufnr, 'grammarous_result', [])), '{
-                \   "word" : printf("Error:   %s\nContext: %s\nCorrect: %s", v:val.msg, v:val.context, split(v:val.replacements, "#")[0]),
+                \   "word" : s:make_word(v:val),
                 \   "action__buffer_nr" : a:context.source__checked_bufnr,
                 \   "action__line" : str2nr(v:val.fromy)+1,
                 \   "action__col" : str2nr(v:val.fromx)+1,
