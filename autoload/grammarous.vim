@@ -128,11 +128,11 @@ function! grammarous#invoke_check(range_start, ...)
     let cmd = printf(
                 \ "%s -jar %s -c %s -d %s -l %s --api %s",
                 \ g:grammarous#java_cmd,
-                \ jar,
+                \ substitute(jar, '\\\s\@!', '\\\\', 'g'),
                 \ &fileencoding ? &fileencoding : &encoding,
                 \ string(join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ',')),
                 \ lang,
-                \ tmpfile
+                \ substitute(tmpfile, '\\\s\@!', '\\\\', 'g'),
                 \ )
 
     let msg = printf("Checking grammater (lang: %s) ...", lang)
