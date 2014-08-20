@@ -70,11 +70,6 @@ function! s:init()
         return s:jar_file
     endif
 
-    if !exists('*matchaddpos')
-        call grammarous#error('Vim 7.4p330+ is required for matchaddpos()')
-        return ''
-    endif
-
     if !executable(g:grammarous#java_cmd)
         call grammarous#error('"java" command is not found.  Please install java 1.7+ .')
         return ''
