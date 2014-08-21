@@ -91,7 +91,7 @@ Execute below command in the buffer already checked or you want to check.
 
 ## FAQ
 
-### I want to check comments only in source code by default.
+### How do I check comments only in source code by default?
 
 Plese use `g:grammarous#default_comments_only_filetypes`.
 
@@ -103,9 +103,9 @@ let g:grammarous#default_comments_only_filetypes = {
             \ }
 ```
 
-### I want to disable some annoying rules
+### Some rules annoy me.
 
-Please use `g:grammarous#disabled_rules`.
+Please use `g:grammarous#disabled_rules` to disable specific rules.
 
 For example, below setting disables some rules for each filetypes. `*` means all filetypes, `help` means vim help.
 
@@ -118,11 +118,12 @@ let g:grammarous#disabled_rules = {
 
 The rule names are displayed in Vim command line when you disable the rule in the info window or `<Plug>(grammarous-disable-rule)`.
 
-## I want to define above mappings as buffer local mappings after checking.
+## I want to use above `<Plug>` mappings only after checking.
 
 `on_check` and `on_reset` are available.
 
-For example, below setting defines `<C-n>` and `<C-p>` mappings when the check is completed and clears them on the reset.
+For example, below setting defines `<C-n>` and `<C-p>` mappings as buffer local mappings when the check has been completed.
+They are cleared when the check is reset.
 
 ```vim
 let g:grammarous#hooks = {}
