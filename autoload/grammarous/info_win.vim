@@ -111,6 +111,7 @@ function! grammarous#info_win#open(e, bufnr)
     execute 1
     syntax match GrammarousInfoSection "\%(Context\|Correction\):"
     syntax match GrammarousInfoError "Error:.*$"
+    syntax match GrammarousInfoHelp "^Press '?' in this window to show help$"
     execute 'syntax match GrammarousError "' . escape(grammarous#generate_highlight_pattern(a:e), '"') . '"'
     setlocal nonumber
     setlocal bufhidden=hide

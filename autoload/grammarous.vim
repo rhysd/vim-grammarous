@@ -24,11 +24,13 @@ let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
 highlight default link GrammarousInfoSection Keyword
+highlight default link GrammarousInfoHelp Special
 
 augroup pluging-rammarous-highlight
     autocmd ColorScheme * highlight default link GrammarousError SpellBad
     autocmd ColorScheme * highlight default link GrammarousInfoError ErrorMsg
     autocmd ColorScheme * highlight default link GrammarousInfoSection Keyword
+    autocmd ColorScheme * highlight default link GrammarousInfoHelp Special
 augroup END
 
 function! grammarous#_import_vital_modules()
