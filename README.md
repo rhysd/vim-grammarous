@@ -151,6 +151,12 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 - [unite.vim](https://github.com/Shougo/unite.vim) (optional)
 - [vim-operator-user](https://github.com/kana/vim-operator-user) (optional)
 
+## Future
+
+- __Ignore specific regions__ : Enable to specify the region which vim-grammarous should not check.  It is helpful for GFM's fenced code blocks.
+- __Check background__ : Run LanguageTool in background.  It will not prevent user input but may make the response poor.
+- __Incremental grammarous check__ : Check only the sentences you input while starting from entering and leaving insert mode.
+
 ## Contribution
 
 If you find some bugs, please report it to [issues page](https://github.com/rhysd/vim-grammarous/issues).  Pull requests are welcome. None of them is too short.
