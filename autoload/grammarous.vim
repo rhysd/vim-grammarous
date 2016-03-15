@@ -73,7 +73,7 @@ function! s:init()
     endif
 
     if !executable(g:grammarous#java_cmd)
-        call grammarous#error('"java" command is not found.  Please install java 1.7+ .')
+        call grammarous#error('"java" command not found.  Please install Java 7+ .')
         return ''
     endif
 
@@ -132,14 +132,14 @@ function! grammarous#invoke_check(range_start, ...)
                 \ substitute(tmpfile, '\\\s\@!', '\\\\', 'g'),
                 \ )
 
-    let msg = printf("Checking grammater (lang: %s) ...", lang)
+    let msg = printf("Checking grammar (lang: %s) ...", lang)
     echo msg
     " FIXME: Do it in background
     let xml = s:P.system(cmd)
     call delete(tmpfile)
 
     if s:P.get_last_status()
-        call grammarous#error("Command '%s' is failed:\n%s", cmd, xml)
+        call grammarous#error("Command '%s' failed:\n%s", cmd, xml)
         return []
     endif
 
@@ -292,7 +292,7 @@ function! grammarous#check_current_buffer(qargs, range)
 
     redraw!
     if empty(b:grammarous_result)
-        echomsg "Yay! No grammatical error is detected."
+        echomsg "Yay! No grammatical errors detected."
         return
     else
         let len = len(b:grammarous_result)
@@ -513,7 +513,7 @@ function! grammarous#move_to_next_error(pos, errs)
             return s:move_to_pos(p)
         endif
     endfor
-    call grammarous#error("No next error is found.")
+    call grammarous#error("No next error found.")
     return 0
 endfunction
 
@@ -524,7 +524,7 @@ function! grammarous#move_to_previous_error(pos, errs)
             return s:move_to_pos(p)
         endif
     endfor
-    call grammarous#error("No previous error is found.")
+    call grammarous#error("No previous error found.")
     return 0
 endfunction
 
