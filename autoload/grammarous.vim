@@ -12,6 +12,7 @@ let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir',
 let g:grammarous#jar_url                         = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
 let g:grammarous#java_cmd                        = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang                    = get(g:, 'grammarous#default_lang', 'en')
+let g:grammarous#use_vim_spelllang               = get(g:, 'grammarous#use_vim_spelllang', 0)
 let g:grammarous#info_window_height              = get(g:, 'grammarous#info_window_height', 10)
 let g:grammarous#info_win_direction              = get(g:, 'grammarous#info_win_direction', 'botright')
 let g:grammarous#use_fallback_highlight          = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
@@ -109,7 +110,17 @@ function! grammarous#invoke_check(range_start, ...)
         return []
     endif
 
-    let lang = a:0 == 1 ? g:grammarous#default_lang : a:1
+
+    if g:grammarous#use_vim_spelllang
+      " Convert vim spelllang to languagetool spelllang
+      if len(split(&spelllang, '_')) == 1
+        let lang = split(&spelllang, '_')[0]
+      elseif len(split(&spelllang, '_')) == 2
+        let lang = split(&spelllang, '_')[0].'-'.toupper(split(&spelllang, '_')[1])
+      endif
+    else
+      let lang = a:0 == 1 ? g:grammarous#default_lang : a:1
+    endif
     let text = s:make_text(a:0 == 1 ? a:1 : a:2)
 
     let tmpfile = tempname()
