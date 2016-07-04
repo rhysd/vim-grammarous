@@ -9,7 +9,7 @@ let s:P = s:V.import('Process')
 let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
 silent! lockvar g:grammarous#root
 let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
-let g:grammarous#jar_url                         = get(g:, 'grammarous#jar_url', 'https://languagetool.org/download/LanguageTool-2.6.zip')
+let g:grammarous#jar_url                         = get(g:, 'grammarous#jar_url', 'https://www.languagetool.org/download/LanguageTool-3.4.zip')
 let g:grammarous#java_cmd                        = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang                    = get(g:, 'grammarous#default_lang', 'en')
 let g:grammarous#use_vim_spelllang               = get(g:, 'grammarous#use_vim_spelllang', 0)
@@ -74,7 +74,7 @@ function! s:init()
     endif
 
     if !executable(g:grammarous#java_cmd)
-        call grammarous#error('"java" command not found.  Please install Java 7+ .')
+        call grammarous#error('"java" command not found.  Please install Java 8+ .')
         return ''
     endif
 

@@ -14,7 +14,7 @@ INTRODUCTION                                       *vim-grammarous-introduction*
 
 *vim-grammarous* is a powerful grammar checker for Vim.  Simply do
 |:GrammarousCheck| to see the powerful checking. This plugin automatically
-downloads LanguageTool, which requires Java 7+.
+downloads LanguageTool, which requires Java 8+.
 
 
 ==============================================================================
