@@ -149,7 +149,7 @@ function! grammarous#invoke_check(range_start, ...)
     if g:grammarous#languagetool_cmd !=# ''
         let cmd = printf('%s %s', g:grammarous#languagetool_cmd, cmdargs)
     else
-        let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'))
+        let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
     echo printf("Checking grammar (lang: %s) ...", lang)
