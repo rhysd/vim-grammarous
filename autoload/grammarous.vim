@@ -21,6 +21,7 @@ let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_c
 let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
 let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_first_error', 1)
 let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {})
+let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -100,9 +101,13 @@ function! s:make_text(text)
 endfunction
 
 function! grammarous#invoke_check(range_start, ...)
-    let jar = s:init()
-    if jar ==# ''
-        return []
+    if g:grammarous#languagetool_cmd ==# ''
+        let jar = s:init()
+        if jar ==# ''
+            return []
+        endif
+    else
+        let jar = ''
     endif
 
     if a:0 < 1
@@ -133,18 +138,21 @@ function! grammarous#invoke_check(range_start, ...)
         silent echon text
     redir END
 
-    let cmd = printf(
-                \ "%s -jar %s -c %s -d %s -l %s --api %s",
-                \ g:grammarous#java_cmd,
-                \ substitute(jar, '\\\s\@!', '\\\\', 'g'),
-                \ &fileencoding ? &fileencoding : &encoding,
-                \ string(join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ',')),
-                \ lang,
-                \ substitute(tmpfile, '\\\s\@!', '\\\\', 'g'),
-                \ )
+    let cmdargs = printf(
+            \   '-c %s -d %s -l %s --api %s',
+            \   &fileencoding ? &fileencoding : &encoding,
+            \   string(join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ',')),
+            \   lang,
+            \   substitute(tmpfile, '\\\s\@!', '\\\\', 'g')
+            \ )
 
-    let msg = printf("Checking grammar (lang: %s) ...", lang)
-    echo msg
+    if g:grammarous#languagetool_cmd !=# ''
+        let cmd = printf('%s %s', g:grammarous#languagetool_cmd, cmdargs)
+    else
+        let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'))
+    endif
+
+    echo printf("Checking grammar (lang: %s) ...", lang)
     " FIXME: Do it in background
     let xml = s:P.system(cmd)
     call delete(tmpfile)

@@ -122,7 +122,7 @@ The rule names are displayed in Vim command line when you disable the rule in th
 
 Plese use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.
 
-## I want to use above `<Plug>` mappings only after checking.
+### I want to use above `<Plug>` mappings only after checking.
 
 `on_check` and `on_reset` are available.
 
@@ -140,6 +140,14 @@ function! g:grammarous#hooks.on_reset(errs)
     nunmap <buffer><C-n>
     nunmap <buffer><C-p>
 endfunction
+```
+
+### I want to use system global LanguageTool command
+
+`g:grammarous#languagetool_cmd` is available for the purpose.  If some command is set to `g:grammarous#languagetool_cmd` in your `.vimrc`, vim-grammarous does not install its own LanguageTool jar and use the command to run LanguageTool.
+
+```vim
+let g:grammarous#languagetool_cmd = 'languagetool'
 ```
 
 
