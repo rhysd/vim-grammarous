@@ -10,7 +10,7 @@ nnoremap <silent><Plug>(grammarous-open-info-window) :<C-u>call grammarous#creat
 nnoremap <silent><Plug>(grammarous-reset) :<C-u>call grammarous#reset()<CR>
 nnoremap <silent><Plug>(grammarous-fixit) :<C-u>call grammarous#fixit(grammarous#get_error_at(getpos('.')[1 : 2], b:grammarous_result))<CR>
 nnoremap <silent><Plug>(grammarous-fixall) :<C-u>call grammarous#fixall(b:grammarous_result)<CR>
-nnoremap <silent><Plug>(grammarous-close-info-window) :<C-u>call grammarous#close_info_window()<CR>
+nnoremap <silent><Plug>(grammarous-close-info-window) :<C-u>call grammarous#info_win#close()<CR>
 nnoremap <silent><Plug>(grammarous-remove-error) :<C-u>call grammarous#remove_error_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 nnoremap <silent><Plug>(grammarous-disable-rule) :<C-u>call grammarous#disable_rule_at(getpos('.')[1 : 2], b:grammarous_result)<CR>
 nnoremap <silent><Plug>(grammarous-move-to-next-error) :<C-u>call grammarous#move_to_next_error(getpos('.')[1 : 2], b:grammarous_result)<CR>
