@@ -1,7 +1,8 @@
 vim-grammarous
 ==============
 
-vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousCheck` to see the powerful checking.  This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
+vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousCheck` to see the powerful checking.
+This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
 
 ![screenshot](http://gifzo.net/gVALLqiB.gif)
 
@@ -64,7 +65,8 @@ However, above local mappings are enough to deal with grammar errors.  They are 
 
 ### Operator mappings
 
-Operator mapping checks grammar errors in the extent which the text object specify.  This mapping is available when [vim-operator-user](https://github.com/kana/vim-operator-user) is installed.
+Operator mapping checks grammar errors in the extent which the text object specify.
+This mapping is available when [vim-operator-user](https://github.com/kana/vim-operator-user) is installed.
 
 | Mappings                      | Description                            |
 | ----------------------------- |:-------------------------------------- |
@@ -144,7 +146,9 @@ endfunction
 
 ### I want to use system global LanguageTool command
 
-`g:grammarous#languagetool_cmd` is available for the purpose.  If some command is set to `g:grammarous#languagetool_cmd` in your `.vimrc`, vim-grammarous does not install its own LanguageTool jar and use the command to run LanguageTool.
+`g:grammarous#languagetool_cmd` is available for the purpose.
+If some command is set to `g:grammarous#languagetool_cmd` in your `.vimrc`, vim-grammarous does not install
+its own LanguageTool jar and use the command to run LanguageTool.
 
 ```vim
 let g:grammarous#languagetool_cmd = 'languagetool'
@@ -153,7 +157,8 @@ let g:grammarous#languagetool_cmd = 'languagetool'
 
 ## Automatic installation
 
-This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.  If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
+This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.
+If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
 
 
 ## Requirements
@@ -171,7 +176,8 @@ This plugin attempts to install [LanguageTool](https://www.languagetool.org/) us
 
 ## Contribution
 
-If you find some bugs, please report it to [issues page](https://github.com/rhysd/vim-grammarous/issues).  Pull requests are welcome. None of them is too short.
+If you find some bugs, please report it to [issues page](https://github.com/rhysd/vim-grammarous/issues).
+Pull requests are welcome. None of them is too short.
 
 
 ## License
