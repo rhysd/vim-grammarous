@@ -5,6 +5,7 @@ let s:V = vital#of('grammarous')
 let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
+let s:is_cygwin = hash('win32unix')
 
 let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
 let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
@@ -87,8 +88,29 @@ function! s:init()
         return ''
     endif
 
+    if s:is_cygwin
+        let jar = s:cygpath(jar)
+    endif
+
     let s:jar_file = jar
     return jar
+endfunction
+
+function! s:cygpath(path) abort
+    if !executable('cygpath')
+        return a:path
+    endif
+
+    " On Cygwin environment, paths should be converted with cygpath.
+    "   /cygdrive/c/... -> C:/...
+    " https://github.com/rhysd/vim-grammarous/issues/30
+    let converted = s:P.system('cygpath -aw ' . a:path)
+
+    if s:P.get_last_status()
+        return a:path
+    endif
+
+    return converted
 endfunction
 
 function! s:make_text(text)
@@ -114,7 +136,6 @@ function! grammarous#invoke_check(range_start, ...)
         return []
     endif
 
-
     if g:grammarous#use_vim_spelllang
       " Convert vim spelllang to languagetool spelllang
       if len(split(&spelllang, '_')) == 1
@@ -136,6 +157,10 @@ function! grammarous#invoke_check(range_start, ...)
         endwhile
         silent echon text
     redir END
+
+    if s:is_cygwin
+        let tmpfile = s:cygpath(tmpfile)
+    endif
 
     let cmdargs = printf(
             \   '-c %s -d %s -l %s --api %s',
