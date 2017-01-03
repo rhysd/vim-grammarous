@@ -5,7 +5,7 @@ let s:V = vital#of('grammarous')
 let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
-let s:is_cygwin = hash('win32unix')
+let s:is_cygwin = has('win32unix')
 
 let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
 let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
@@ -104,7 +104,7 @@ function! s:cygpath(path) abort
     " On Cygwin environment, paths should be converted with cygpath.
     "   /cygdrive/c/... -> C:/...
     " https://github.com/rhysd/vim-grammarous/issues/30
-    let converted = s:P.system('cygpath -aw ' . a:path)
+    let converted = substitute(s:P.system('cygpath -aw ' . a:path), '\n\+$', '', '')
 
     if s:P.get_last_status()
         return a:path
