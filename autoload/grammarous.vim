@@ -189,16 +189,16 @@ function! grammarous#invoke_check(range_start, ...)
     return s:XML.parse(substitute(xml, "\n", '', 'g'))
 endfunction
 
-function! s:sunitize(s)
+function! s:sanitize(s)
     return substitute(escape(a:s, "'\\"), ' ', '\\_\\s', 'g')
 endfunction
 
 function! grammarous#generate_highlight_pattern(error)
     let line = a:error.fromy + 1
-    let prefix = a:error.contextoffset > 0 ? s:sunitize(a:error.context[: a:error.contextoffset-1]) : ''
+    let prefix = a:error.contextoffset > 0 ? s:sanitize(a:error.context[: a:error.contextoffset-1]) : ''
     let rest = a:error.context[a:error.contextoffset :]
-    let the_error = s:sunitize(rest[: a:error.errorlength-1])
-    let rest = s:sunitize(rest[a:error.errorlength :])
+    let the_error = s:sanitize(rest[: a:error.errorlength-1])
+    let rest = s:sanitize(rest[a:error.errorlength :])
     return '\V' . prefix . '\zs' . the_error . '\ze' . rest
 endfunction
 
