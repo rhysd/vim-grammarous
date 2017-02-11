@@ -35,6 +35,12 @@ augroup pluging-rammarous-highlight
     autocmd ColorScheme * highlight default link GrammarousInfoHelp Special
 augroup END
 
+function! s:get_SID() abort
+    return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeget_SID$')
+endfunction
+let s:SID = s:get_SID()
+delfunction s:get_SID
+
 function! grammarous#_import_vital_modules()
     return [s:XML, s:O, s:P]
 endfunction
@@ -121,11 +127,55 @@ function! s:make_text(text)
     endif
 endfunction
 
-function! grammarous#invoke_check(range_start, ...)
+function! s:set_errors_from_xml_string(xml) abort
+    let b:grammarous_result = grammarous#get_errors_from_xml(s:XML.parse(substitute(a:xml, "\n", '', 'g')))
+    let parsed = s:last_parsed_options
+
+    if s:is_comment_only(parsed['comments-only'])
+        call filter(b:grammarous_result, 'synIDattr(synID(v:val.fromy+1, v:val.fromx+1, 0), "name") =~? "comment"')
+    endif
+
+    redraw!
+    if empty(b:grammarous_result)
+        echomsg "Yay! No grammatical errors detected."
+        return
+    else
+        let len = len(b:grammarous_result)
+        echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
+        call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
+        if parsed['move-to-first-error']
+            call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
+        endif
+    endif
+
+    if g:grammarous#enable_spell_check
+        let s:saved_spell = &l:spell
+        setlocal spell
+    endif
+
+    if has_key(g:grammarous#hooks, 'on_check')
+        call call(g:grammarous#hooks.on_check, [b:grammarous_result], g:grammarous#hooks)
+    endif
+endfunction
+
+function! s:on_check_done(channel) abort
+    echo 'Done.'
+    let xml = ''
+    while ch_status(a:channel, {'part': 'out'}) == 'buffered'
+        let xml .= ch_read(a:channel)
+    endwhile
+    call s:set_errors_from_xml_string(xml)
+endfunction
+
+function! s:on_check_failed(ch, msg) abort
+    call grammarous#error('Grammar check was failed: ' . a:msg)
+endfunction
+
+function! s:invoke_check(range_start, ...)
     if g:grammarous#languagetool_cmd ==# ''
         let jar = s:init()
         if jar ==# ''
-            return []
+            return
         endif
     else
         let jar = ''
@@ -133,7 +183,7 @@ function! grammarous#invoke_check(range_start, ...)
 
     if a:0 < 1
         call grammarous#error('Invalid argument')
-        return []
+        return
     endif
 
     if g:grammarous#use_vim_spelllang
@@ -176,17 +226,20 @@ function! grammarous#invoke_check(range_start, ...)
         let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
-    echo printf("Checking grammar (lang: %s) ...", lang)
-    " FIXME: Do it in background
-    let xml = s:P.system(cmd)
-    call delete(tmpfile)
+    if !has('job')
+        let xml = s:P.system(cmd)
+        call delete(tmpfile)
 
-    if s:P.get_last_status()
-        call grammarous#error("Command '%s' failed:\n%s", cmd, xml)
-        return []
+        if s:P.get_last_status()
+            call grammarous#error("Command '%s' failed:\n%s", cmd, xml)
+            return
+        endif
+        call s:set_errors_from_xml_string(xml)
+        return
     endif
 
-    return s:XML.parse(substitute(xml, "\n", '', 'g'))
+    call job_start(cmd, {'close_cb' : s:SID . 'on_check_done'})
+    echon 'Grammar check has started...'
 endfunction
 
 function! s:sanitize(s)
@@ -320,40 +373,14 @@ function! grammarous#check_current_buffer(qargs, range)
         call grammarous#info_win#start_auto_preview()
     endif
 
-    let b:grammarous_result
-                \ = grammarous#get_errors_from_xml(
-                \       grammarous#invoke_check(
-                \           parsed.__range__[0],
-                \           parsed.lang,
-                \           getline(parsed.__range__[0], parsed.__range__[1])
-                \       )
-                \   )
+    " XXX
+    let s:last_parsed_options = parsed
 
-    if s:is_comment_only(parsed['comments-only'])
-        call filter(b:grammarous_result, 'synIDattr(synID(v:val.fromy+1, v:val.fromx+1, 0), "name") =~? "comment"')
-    endif
-
-    redraw!
-    if empty(b:grammarous_result)
-        echomsg "Yay! No grammatical errors detected."
-        return
-    else
-        let len = len(b:grammarous_result)
-        echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
-        call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
-        if parsed['move-to-first-error']
-            call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
-        endif
-    endif
-
-    if g:grammarous#enable_spell_check
-        let s:saved_spell = &l:spell
-        setlocal spell
-    endif
-
-    if has_key(g:grammarous#hooks, 'on_check')
-        call call(g:grammarous#hooks.on_check, [b:grammarous_result], g:grammarous#hooks)
-    endif
+    call s:invoke_check(
+                \ parsed.__range__[0],
+                \ parsed.lang,
+                \ getline(parsed.__range__[0], parsed.__range__[1])
+              \ )
 endfunction
 
 function! s:less_position(p1, p2)

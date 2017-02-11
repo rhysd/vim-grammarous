@@ -4,8 +4,8 @@ vim-grammarous
 vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousCheck` to see the powerful checking.
 This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
 
-![screenshot](http://gifzo.net/gVALLqiB.gif)
-
+This plugin can use job feature on Vim8+. It enables asynchronous command execution so you need not to wait the
+result when enabled.
 
 ## Commands
 
