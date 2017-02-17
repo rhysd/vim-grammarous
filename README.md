@@ -4,7 +4,7 @@ vim-grammarous
 vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousCheck` to see the powerful checking.
 This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
 
-This plugin can use job feature on Vim8+ or Neovim. It enables asynchronous command execution so you need not to
+This plugin can use job feature on Vim8+ or Neovim. It enables asynchronous command execution so you don't need to
 wait until the check has been done on Vim8+ or Neovim.
 
 ## Commands
@@ -95,7 +95,7 @@ Execute below command in the buffer already checked or you want to check.
 
 ### How do I check comments only in source code by default?
 
-Plese use `g:grammarous#default_comments_only_filetypes`.
+Please use `g:grammarous#default_comments_only_filetypes`.
 
 For example, below setting makes grammar checker check comments only except for markdown and vim help.
 
@@ -120,7 +120,7 @@ let g:grammarous#disabled_rules = {
 
 The rule names are displayed in Vim command line when you disable the rule in the info window or `<Plug>(grammarous-disable-rule)`.
 
-### How do I use vim's spelllang?
+### How do I use this plugin with vim's spelllang?
 
 Plese use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.
 
@@ -133,12 +133,12 @@ They are cleared when the check is reset.
 
 ```vim
 let g:grammarous#hooks = {}
-function! g:grammarous#hooks.on_check(errs)
+function! g:grammarous#hooks.on_check(errs) abort
     nmap <buffer><C-n> <Plug>(grammarous-move-to-next-error)
     nmap <buffer><C-p> <Plug>(grammarous-move-to-previous-error)
 endfunction
 
-function! g:grammarous#hooks.on_reset(errs)
+function! g:grammarous#hooks.on_reset(errs) abort
     nunmap <buffer><C-n>
     nunmap <buffer><C-p>
 endfunction
