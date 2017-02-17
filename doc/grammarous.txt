@@ -16,6 +16,9 @@ INTRODUCTION                                       *vim-grammarous-introduction*
 |:GrammarousCheck| to see the powerful checking. This plugin automatically
 downloads LanguageTool, which requires Java 8+.
 
+|vim-grammarous| uses job feature on Vim8+ or Neovim. You need not to wait
+until the check has done.
+
 
 ==============================================================================
 USAGE                                                     *vim-grammarous-usage*

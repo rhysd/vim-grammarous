@@ -158,8 +158,7 @@ function! s:set_errors_from_xml_string(xml) abort
     endif
 endfunction
 
-function! s:on_check_done(channel) abort
-    echo 'Done.'
+function! s:on_check_done_vim8(channel) abort
     let xml = ''
     while ch_status(a:channel, {'part': 'out'}) == 'buffered'
         let xml .= ch_read(a:channel)
@@ -169,6 +168,24 @@ endfunction
 
 function! s:on_check_failed(ch, msg) abort
     call grammarous#error('Grammar check was failed: ' . a:msg)
+endfunction
+
+function! s:on_exit_nvim(job, status, event) abort dict
+    if a:status != 0
+        call grammarous#error('Grammar check was failed: ' . self._stderr)
+        return
+    endif
+
+    call s:set_errors_from_xml_string(self._stdout)
+endfunction
+
+function! s:on_output_nvim(job, lines, event) abort dict
+    let output = join(a:lines, "\n")
+    if a:event ==# 'stdout'
+        let self._stdout .= output
+    else
+        let self._stderr .= output
+    endif
 endfunction
 
 function! s:invoke_check(range_start, ...)
@@ -226,20 +243,33 @@ function! s:invoke_check(range_start, ...)
         let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
-    if !has('job')
-        let xml = s:P.system(cmd)
-        call delete(tmpfile)
-
-        if s:P.get_last_status()
-            call grammarous#error("Command '%s' failed:\n%s", cmd, xml)
-            return
-        endif
-        call s:set_errors_from_xml_string(xml)
+    if has('job')
+        let job = job_start(cmd, {'close_cb' : s:SID . 'on_check_done_vim8'})
+        echo 'Grammar check has started with job(' . job . ')...'
         return
     endif
 
-    call job_start(cmd, {'close_cb' : s:SID . 'on_check_done'})
-    echon 'Grammar check has started...'
+    if has('nvim')
+        let opts = {
+            \   'on_stdout' : function('s:on_output_nvim'),
+            \   'on_stderr' : function('s:on_output_nvim'),
+            \   'on_exit' : function('s:on_exit_nvim'),
+            \   '_stdout' : '',
+            \   '_stderr' : '',
+            \ }
+        let job = jobstart(cmd, opts)
+        echo 'Grammar check has started with job(id: ' . job . ')...'
+        return
+    endif
+
+    let xml = s:P.system(cmd)
+    call delete(tmpfile)
+
+    if s:P.get_last_status()
+        call grammarous#error("Command '%s' failed:\n%s", cmd, xml)
+        return
+    endif
+    call s:set_errors_from_xml_string(xml)
 endfunction
 
 function! s:sanitize(s)
