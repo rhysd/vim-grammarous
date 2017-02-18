@@ -166,6 +166,17 @@ function! s:on_check_done_vim8(channel) abort
     call s:set_errors_from_xml_string(xml)
 endfunction
 
+function! s:on_check_exit_vim8(channel, status) abort
+    if a:status == 0
+        return
+    endif
+    let err = ''
+    while ch_status(a:channel, {'part' : 'err'}) ==# 'buffered'
+        let err .= ch_read(a:channel, {'part' : 'err'})
+    endwhile
+    call grammarous#error('Grammar check was failed with exit status ' . a:status . ': ' . err)
+endfunction
+
 function! s:on_exit_nvim(job, status, event) abort dict
     if a:status != 0
         call grammarous#error('Grammar check was failed: ' . self._stderr)
@@ -240,7 +251,7 @@ function! s:invoke_check(range_start, ...)
     endif
 
     if has('job')
-        let job = job_start(cmd, {'close_cb' : s:SID . 'on_check_done_vim8'})
+        let job = job_start(cmd, {'close_cb' : s:SID . 'on_check_done_vim8', 'exit_cb' : s:SID . 'on_check_exit_vim8'})
         echo 'Grammar check has started with job(' . job . ')...'
         return
     endif
