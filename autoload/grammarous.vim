@@ -163,6 +163,9 @@ function! s:on_check_done_vim8(channel) abort
     while ch_status(a:channel, {'part' : 'out'}) ==# 'buffered'
         let xml .= ch_read(a:channel)
     endwhile
+    if xml ==# ''
+        return
+    endif
     call s:set_errors_from_xml_string(xml)
 endfunction
 
