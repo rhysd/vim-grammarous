@@ -159,14 +159,6 @@ function! s:set_errors_from_xml_string(xml) abort
 endfunction
 
 function! s:on_check_done_vim8(channel) abort
-    let err = ''
-    while ch_status(a:channel, {'part' : 'err'}) ==# 'buffered'
-        let err .= ch_read(a:channel, {'part' : 'err'})
-    endwhile
-    if err !=# ''
-        call grammarous#error('Grammar check was failed: ' . err)
-        return
-    endif
     let xml = ''
     while ch_status(a:channel, {'part' : 'out'}) ==# 'buffered'
         let xml .= ch_read(a:channel)
