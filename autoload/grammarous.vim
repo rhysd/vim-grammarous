@@ -6,6 +6,7 @@ let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
 let s:is_cygwin = has('win32unix')
+let s:job_is_available = has('job') && has('patch-8.0.0027')
 
 let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
 let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', g:grammarous#root . '/misc')
@@ -253,7 +254,7 @@ function! s:invoke_check(range_start, ...)
         let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
-    if has('job')
+    if s:job_is_available
         let job = job_start(cmd, {'close_cb' : s:SID . 'on_check_done_vim8', 'exit_cb' : s:SID . 'on_check_exit_vim8'})
         echo 'Grammar check has started with job(' . job . ')...'
         return
