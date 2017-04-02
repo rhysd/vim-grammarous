@@ -1,7 +1,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = vital#of('grammarous')
+let s:V = vital#grammarous#new()
 let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
