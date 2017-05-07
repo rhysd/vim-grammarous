@@ -7,6 +7,8 @@ This plugin automatically downloads [LanguageTool](https://www.languagetool.org/
 This plugin can use job feature on Vim 8.0.27 (or later) or Neovim. It enables asynchronous command execution so you don't need to
 wait until the check has been done on Vim8+ or Neovim.
 
+![demo screen cast](https://github.com/rhysd/ss/blob/master/vim-grammarous/demo.gif?raw=true)
+
 ## Commands
 
 ```
@@ -81,8 +83,6 @@ Execute below command in the buffer already checked or you want to check.
 ```
 :Unite grammarous
 ```
-
-![unite source for grammarous](https://dl.dropboxusercontent.com/u/2753138/unite_grammarous.jpg)
 
 ## Fix examples
 
