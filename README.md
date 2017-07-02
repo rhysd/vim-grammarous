@@ -9,6 +9,7 @@ wait until the check has been done on Vim8+ or Neovim.
 
 ![demo screen cast](https://github.com/rhysd/ss/blob/master/vim-grammarous/demo.gif?raw=true)
 
+
 ## Commands
 
 ```
@@ -84,12 +85,14 @@ Execute below command in the buffer already checked or you want to check.
 :Unite grammarous
 ```
 
+
 ## Fix examples
 
 - [vim-themis](https://github.com/rhysd/vim-themis/commit/b2f838b29f47180ccee50488e01d6774a21d0c03)
 - [unite.vim](https://github.com/rhysd/unite.vim/commit/5716eac38781e7a233c98f2a3d7aee8909326791)
 - [vim-quickrun](https://github.com/rhysd/vim-quickrun/commit/236c753e0572266670d176e667054d55ad52a3f3)
 - [neosnippet.vim](https://github.com/rhysd/neosnippet/commit/c72e26e50ccf53f9d66a31fd9d70696c85c62873)
+
 
 ## FAQ
 
@@ -154,6 +157,10 @@ its own LanguageTool jar and use the command to run LanguageTool.
 let g:grammarous#languagetool_cmd = 'languagetool'
 ```
 
+### I want to see the first error in an information window soon after `:GrammarousCheck`
+
+Please set `g:grammarous#show_first_error` to `1`. It opens an information window after `:GrammarousCheck` immediately when some error detected.
+
 
 ## Automatic installation
 
@@ -168,11 +175,12 @@ If it fails, you should install it manually.  Please download zip file of Langua
 - [unite.vim](https://github.com/Shougo/unite.vim) (optional)
 - [vim-operator-user](https://github.com/kana/vim-operator-user) (optional)
 
+
 ## Future
 
 - __Ignore specific regions__ : Enable to specify the region which vim-grammarous should not check.  It is helpful for GFM's fenced code blocks.
-- __Check background__ : Run LanguageTool in background.  It will not prevent user input but may make the response poor.
 - __Incremental grammarous check__ : Check only the sentences you input while starting from entering and leaving insert mode.
+
 
 ## Contribution
 

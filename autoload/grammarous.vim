@@ -23,6 +23,7 @@ let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_sp
 let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_first_error', 1)
 let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {})
 let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
+let g:grammarous#show_first_error                = get(g:, 'grammarous#show_first_error', 0)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -140,18 +141,22 @@ function! s:set_errors_from_xml_string(xml) abort
     if empty(b:grammarous_result)
         echomsg "Yay! No grammatical errors detected."
         return
-    else
-        let len = len(b:grammarous_result)
-        echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
-        call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
-        if parsed['move-to-first-error']
-            call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
-        endif
+    endif
+
+    let len = len(b:grammarous_result)
+    echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
+    call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
+    if parsed['move-to-first-error']
+        call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
     endif
 
     if g:grammarous#enable_spell_check
         let s:saved_spell = &l:spell
         setlocal spell
+    endif
+
+    if g:grammarous#show_first_error
+        call grammarous#create_update_info_window_of(b:grammarous_result)
     endif
 
     if has_key(g:grammarous#hooks, 'on_check')
