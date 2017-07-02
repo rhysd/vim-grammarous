@@ -331,8 +331,9 @@ function! s:highlight_error(from, to)
 
     let ids = [s:matcherrpos(a:from[0], a:from[1], strlen(getline(a:from[0]))+1 - a:from[1])]
     let line = a:from[0] + 1
-    while line != a:to[0]
+    while line < a:to[0]
         call add(ids, s:matcherrpos(line))
+        let line += 1
     endwhile
     call add(ids, s:matcherrpos(a:to[0], 1, a:to[1] - 1))
     return ids
