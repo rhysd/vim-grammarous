@@ -87,7 +87,7 @@ Execute below command in the buffer already checked or you want to check.
 
 ### `grammarous` denite.nvim source
 
-For [denite.nvim](https://github.com/Shougo/unite.vim) users, `grammarous` denite source is available. Note that the kind is currently set to `file`, which means that actions a user can use are limited to open(jump), preview, etc.
+For [denite.nvim](https://github.com/Shougo/denite.nvim) users, `grammarous` denite source is available. Note that the kind is currently set to `file`, which means that actions a user can use are limited to open(jump), preview, etc.
 Execute below command in the buffer already checked.
 
 ```
