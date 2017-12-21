@@ -368,7 +368,37 @@ function! grammarous#reset_highlights()
     endfor
 endfunction
 
+function! grammarous#find_checked_winnr() abort
+    if exists('b:grammarous_result')
+        return winnr()
+    endif
+    for bufnr in tabpagebuflist()
+        let result = getbufvar(bufnr, 'grammarous_result', [])
+        if empty(result)
+            continue
+        endif
+
+        let winnr = bufwinnr(bufnr)
+        if winnr == -1
+            continue
+        endif
+
+        return winnr
+    endfor
+    return -1
+endfunction
+
 function! grammarous#reset()
+    let win = grammarous#find_checked_winnr()
+    if win == -1
+        return
+    endif
+
+    let prev_win = winnr()
+    if win != prev_win
+        execute win . 'wincmd w'
+    endif
+
     call grammarous#reset_highlights()
     call grammarous#info_win#stop_auto_preview()
     call grammarous#info_win#close()
@@ -380,6 +410,10 @@ function! grammarous#reset()
         call call(g:grammarous#hooks.on_reset, [b:grammarous_result], g:grammarous#hooks)
     endif
     unlet! b:grammarous_result b:grammarous_preview_bufnr
+
+    if win != prev_win
+        wincmd p
+    endif
 endfunction
 
 let s:opt_parser = s:O.new()
