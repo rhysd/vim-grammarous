@@ -139,12 +139,12 @@ function! s:set_errors_from_xml_string(xml) abort
 
     redraw!
     if empty(b:grammarous_result)
-        echomsg "Yay! No grammatical errors detected."
+        echomsg 'Yay! No grammatical errors detected.'
         return
     endif
 
     let len = len(b:grammarous_result)
-    echomsg printf("Detected %d grammatical error%s", len, len > 1 ? 's' : '')
+    echomsg printf('Detected %d grammatical error%s', len, len > 1 ? 's' : '')
     call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
     if parsed['move-to-first-error']
         call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
@@ -354,7 +354,7 @@ function! grammarous#highlight_errors_in_current_buffer(errs)
     else
         for e in a:errs
             let e.id = matchadd(
-                    \   "GrammarousError",
+                    \   'GrammarousError',
                     \   s:remove_3dots(grammarous#generate_highlight_pattern(e)),
                     \   999
                     \ )
@@ -410,7 +410,7 @@ function! grammarous#check_current_buffer(qargs, range)
         redraw!
     endif
 
-    let parsed = s:opt_parser.parse(a:qargs, a:range, "")
+    let parsed = s:opt_parser.parse(a:qargs, a:range, '')
     if has_key(parsed, 'help')
         return
     endif
@@ -470,7 +470,7 @@ function! grammarous#fixit(err)
     endif
 
     let sel_save = &l:selection
-    let &l:selection = "inclusive"
+    let &l:selection = 'inclusive'
     let save_g_reg = getreg('g', 1)
     let save_g_regtype = getregtype('g')
     try
@@ -609,7 +609,7 @@ function! grammarous#disable_rule(rule, errs)
         endif
     endfor
 
-    echomsg "Disabled rule: " . a:rule
+    echomsg 'Disabled rule: ' . a:rule
 
     return 1
 endfunction
@@ -630,7 +630,7 @@ function! grammarous#move_to_next_error(pos, errs)
             return s:move_to_pos(p)
         endif
     endfor
-    call grammarous#error("No next error found.")
+    call grammarous#error('No next error found.')
     return 0
 endfunction
 
@@ -641,7 +641,7 @@ function! grammarous#move_to_previous_error(pos, errs)
             return s:move_to_pos(p)
         endif
     endfor
-    call grammarous#error("No previous error found.")
+    call grammarous#error('No previous error found.')
     return 0
 endfunction
 

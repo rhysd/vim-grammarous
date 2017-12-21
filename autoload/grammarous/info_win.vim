@@ -57,30 +57,30 @@ endfunction
 
 function! grammarous#info_win#action_help()
     echo join([
-            \   "| Mappings | Description                                    |",
-            \   "| -------- |:---------------------------------------------- |",
-            \   "|    q     | Quit the info window                           |",
-            \   "|   <CR>   | Move to the location of the error              |",
-            \   "|    f     | Fix the error automatically                    |",
-            \   "|    r     | Remove the error without fix                   |",
-            \   "|    R     | Disable the grammar rule in the checked buffer |",
-            \   "|    n     | Move to the next error                         |",
-            \   "|    p     | Move to the previous error                     |",
+            \   '| Mappings | Description                                    |',
+            \   '| -------- |:---------------------------------------------- |',
+            \   '|    q     | Quit the info window                           |',
+            \   '|   <CR>   | Move to the location of the error              |',
+            \   '|    f     | Fix the error automatically                    |',
+            \   '|    r     | Remove the error without fix                   |',
+            \   '|    R     | Disable the grammar rule in the checked buffer |',
+            \   '|    n     | Move to the next error                         |',
+            \   '|    p     | Move to the previous error                     |',
             \ ], "\n")
 endfunction
 
 function! s:get_info_buffer(e)
     return join(
         \ [
-        \   "Error: " . a:e.category,
-        \   "    " . a:e.msg,
-        \   "",
-        \   "Context:",
-        \   "    " . a:e.context,
-        \   "",
-        \   "Correction:",
-        \   "    " . string(split(a:e.replacements, '#', 1)[0]),
-        \   "",
+        \   'Error: ' . a:e.category,
+        \   '    ' . a:e.msg,
+        \   '',
+        \   'Context:',
+        \   '    ' . a:e.context,
+        \   '',
+        \   'Correction:',
+        \   '    ' . string(split(a:e.replacements, '#', 1)[0]),
+        \   '',
         \   "Press '?' in this window to show help",
         \ ],
         \ "\n")

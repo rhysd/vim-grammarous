@@ -65,7 +65,7 @@ function! s:make_word(e)
     if g:unite#sources#grammarous#one_line
         return printf("'%s' -> %s", a:e.context[a:e.contextoffset : a:e.contextoffset+a:e.errorlength-1], a:e.msg)
     else
-        return printf("Error:   %s\nContext: %s\nCorrect: %s", a:e.msg, a:e.context, split(a:e.replacements, "#", 1)[0])
+        return printf('Error:   %s\nContext: %s\nCorrect: %s', a:e.msg, a:e.context, split(a:e.replacements, '#', 1)[0])
     endif
 endfunction
 

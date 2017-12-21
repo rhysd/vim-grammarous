@@ -7,5 +7,5 @@ function! operator#grammarous#do(visual_kind)
         return
     endif
 
-    call grammarous#check_current_buffer("", [getpos("'[")[1], getpos("']")[1]])
+    call grammarous#check_current_buffer('', [getpos("'[")[1], getpos("']")[1]])
 endfunction

@@ -1,5 +1,5 @@
 function! s:error(about, dir)
-    let msg = printf("Could not download jar file because %s. Please download zip from %s and extract it to %s.", a:about, g:grammarous#jar_url, a:dir)
+    let msg = printf('Could not download jar file because %s. Please download zip from %s and extract it to %s.', a:about, g:grammarous#jar_url, a:dir)
     call grammarous#error(msg)
 endfunction
 
@@ -24,7 +24,7 @@ function! grammarous#downloader#download(jar_dir)
         return 0
     endif
 
-    echomsg "Downloading jar file from " . g:grammarous#jar_url . "..."
+    echomsg 'Downloading jar file from ' . g:grammarous#jar_url . '...'
 
     let cmd = printf('%s && unzip %s -d %s', cmd, tmp_file, a:jar_dir)
     let result = system(cmd)
@@ -33,7 +33,7 @@ function! grammarous#downloader#download(jar_dir)
         return 0
     endif
 
-    echomsg "Done!"
+    echomsg 'Done!'
 
     " Should error handling?
     call delete(tmp_file)
