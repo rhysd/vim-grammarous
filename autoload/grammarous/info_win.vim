@@ -101,7 +101,7 @@ function! grammarous#info_win#action_quit()
         endif
 
         let winnr = bufwinnr(bufnr)
-        if winnr != -1
+        if winnr == -1
             continue
         endif
 
