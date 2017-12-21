@@ -88,8 +88,28 @@ endfunction
 
 function! grammarous#info_win#action_quit()
     let s:do_not_preview = 1
+    let preview_bufnr = bufnr('%')
+
     quit!
-    unlet b:grammarous_preview_bufnr
+
+    " Consider the case where :quit! does not navigate to the buffer
+    " where :GrammarousCheck checked.
+    for bufnr in tabpagebuflist()
+        let b = getbufvar(bufnr, 'grammarous_preview_bufnr', -1)
+        if b != preview_bufnr
+            continue
+        endif
+
+        let winnr = bufwinnr(bufnr)
+        if winnr != -1
+            continue
+        endif
+
+        execute winnr . 'wincmd w'
+        unlet b:grammarous_preview_bufnr
+        wincmd p
+        return
+    endfor
 endfunction
 
 function! grammarous#info_win#update(e)
