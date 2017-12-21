@@ -179,7 +179,7 @@ If it fails, you should install it manually.  Please download zip file of Langua
 ## Requirements
 
 - Java8+ (required)
-- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (optional)
+- [vimproc.vim](https://github.com/Shougo/vimproc.vim) (optional for Vim 8.0.25 or earlier on Windows)
 - [unite.vim](https://github.com/Shougo/unite.vim) (optional)
 - [vim-operator-user](https://github.com/kana/vim-operator-user) (optional)
 
