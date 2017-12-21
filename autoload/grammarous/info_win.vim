@@ -107,9 +107,9 @@ function! grammarous#info_win#action_quit()
 
         execute winnr . 'wincmd w'
         unlet b:grammarous_preview_bufnr
-        wincmd p
         return
     endfor
+    " Reach here when the original buffer was already closed
 endfunction
 
 function! grammarous#info_win#update(e)
