@@ -6,6 +6,7 @@ let s:XML = s:V.import('Web.XML')
 let s:O = s:V.import('OptionParser')
 let s:P = s:V.import('Process')
 let s:is_cygwin = has('win32unix')
+let s:is_windows = has('win32') || has('win64')
 let s:job_is_available = has('job') && has('patch-8.0.0027')
 
 let g:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
@@ -61,6 +62,32 @@ function! grammarous#error(...)
     finally
         echohl None
     endtry
+endfunction
+
+function! s:delete_jar_dir() abort
+    if !isdirectory(g:grammarous#jar_dir)
+        return
+    endif
+
+    let dir = g:grammarous#jar_dir
+    if s:is_cygwin
+        let dir = s:cygpath(dir)
+    endif
+
+    if s:is_windows && !s:is_cygwin
+        let cmd = 'rmdir /s /q ' . dir
+    else
+        let cmd = 'rm -rf ' . dir
+    endif
+
+    let out = system(cmd)
+    if v:shell_error
+        call grammarous#error("Cannot remove the directory '%s': %s", dir, out)
+        return
+    endif
+
+    echomsg 'Deleted ' . dir
+    unlet! s:jar_file
 endfunction
 
 function! s:find_jar(dir)
@@ -421,6 +448,7 @@ let s:opt_parser = s:O.new()
     \.on('--[no-]preview',             'enable auto preview', {'default' : 1})
     \.on('--[no-]comments-only',       'check comment only',  {'default' : ''})
     \.on('--[no-]move-to-first-error', 'move to first error', {'default' : g:grammarous#move_to_first_error})
+    \.on('--reinstall-languagetool',   'reinstall LanguageTool', {'default' : 0})
 
 function! grammarous#complete_opt(arglead, cmdline, cursorpos)
     return s:opt_parser.complete(a:arglead, a:cmdline, a:cursorpos)
@@ -452,6 +480,10 @@ function! grammarous#check_current_buffer(qargs, range)
     let b:grammarous_auto_preview = parsed.preview
     if parsed.preview
         call grammarous#info_win#start_auto_preview()
+    endif
+
+    if parsed['reinstall-languagetool']
+        call s:delete_jar_dir()
     endif
 
     " XXX
