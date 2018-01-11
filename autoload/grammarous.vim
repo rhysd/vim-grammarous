@@ -74,6 +74,11 @@ function! s:delete_jar_dir() abort
         let dir = s:cygpath(dir)
     endif
 
+    if dir ==# '' || !isdirectory(dir)
+        call grammarous#error("Directory '%s' does not exist", dir)
+        return
+    endif
+
     if s:is_windows && !s:is_cygwin
         let cmd = 'rmdir /s /q ' . dir
     else
@@ -210,12 +215,12 @@ function! s:on_check_exit_vim8(channel, status) abort
     while ch_status(a:channel, {'part' : 'err'}) ==# 'buffered'
         let err .= ch_read(a:channel, {'part' : 'err'})
     endwhile
-    call grammarous#error('Grammar check was failed with exit status ' . a:status . ': ' . err)
+    call grammarous#error('Grammar check failed with exit status ' . a:status . ': ' . err)
 endfunction
 
 function! s:on_exit_nvim(job, status, event) abort dict
     if a:status != 0
-        call grammarous#error('Grammar check was failed: ' . self._stderr)
+        call grammarous#error('Grammar check failed: ' . self._stderr)
         return
     endif
 
