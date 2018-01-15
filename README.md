@@ -5,7 +5,7 @@ vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousChe
 This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
 
 This plugin can use job feature on Vim 8.0.27 (or later) or Neovim. It enables asynchronous command execution so you don't need to
-wait until the check has been done on Vim8+ or Neovim.
+be blocked until the check has been done on Vim8+ or Neovim.
 
 ![demo screen cast](https://github.com/rhysd/ss/blob/master/vim-grammarous/demo.gif?raw=true)
 
@@ -20,7 +20,7 @@ Execute the grammar checker for current buffer (when `[range]` is specified, the
 
 1. It makes LanguageTool check grammar (It takes a while)
 2. It highlights the locations of detected grammar errors
-3. When you move the cursor on a location of error, it automatically shows the error with the information window.
+3. When you move the cursor to a location of an error, it automatically shows the error with the information window.
 
 Please do `:GrammarousCheck --help` to show more detail about the command.
 
@@ -35,7 +35,7 @@ Reset the current check.
 
 ### Local mappings in the information window
 
-You can use some mappings in the information window, which is opened to show the detail of an error when the cursor move on an error.
+You can use some mappings in the information window, which is opened to show the detail of an error when the cursor moves to the error.
 
 | Mappings | Description                                    |
 | -------- |:---------------------------------------------- |
@@ -68,7 +68,7 @@ However, above local mappings are enough to deal with grammar errors.  They are 
 
 ### Operator mappings
 
-Operator mapping checks grammar errors in the extent which the text object specify.
+Operator mapping checks grammatical errors in the extent which the text object specifies.
 This mapping is available when [vim-operator-user](https://github.com/kana/vim-operator-user) is installed.
 
 | Mappings                      | Description                            |
@@ -120,7 +120,7 @@ let g:grammarous#default_comments_only_filetypes = {
 
 Please use `g:grammarous#disabled_rules` to disable specific rules.
 
-For example, below setting disables some rules for each filetypes. `*` means all filetypes, `help` means vim help.
+For example, below setting disables some rules for each filetype. `*` means all filetypes, `help` means vim help.
 
 ```vim
 let g:grammarous#disabled_rules = {
@@ -139,7 +139,7 @@ Plese use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.
 
 `on_check` and `on_reset` are available.
 
-For example, below setting defines `<C-n>` and `<C-p>` mappings as buffer local mappings when the check has been completed.
+For example, below setting defines `<C-n>` and `<C-p>` mappings as buffer-local mappings when the check has been completed.
 They are cleared when the check is reset.
 
 ```vim
