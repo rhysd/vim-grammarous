@@ -88,7 +88,7 @@ function! s:get_info_buffer(e)
         \ ]
     endif
     let lines += ["Press '?' in this window to show help"]
-    return join(lines, "\n")
+    return lines
 endfunction
 
 function! grammarous#info_win#action_quit()
@@ -120,8 +120,9 @@ endfunction
 function! grammarous#info_win#update(e)
     let b:grammarous_preview_error = a:e
     silent normal! gg"_dG
-    silent put =s:get_info_buffer(a:e)
-    silent 1delete _
+    silent %delete _
+    call setline(1, s:get_info_buffer(a:e))
+    execute 1
     setlocal modified
 
     return bufnr('%')
@@ -131,8 +132,7 @@ function! grammarous#info_win#open(e, bufnr)
     execute g:grammarous#info_win_direction g:grammarous#info_window_height . 'new' '[Grammarous]'
     let b:grammarous_preview_original_bufnr = a:bufnr
     let b:grammarous_preview_error = a:e
-    silent put =s:get_info_buffer(a:e)
-    silent 1delete _
+    call setline(1, s:get_info_buffer(a:e))
     execute 1
     syntax match GrammarousInfoSection "\%(Context\|Correction\):"
     syntax match GrammarousInfoError "Error:.*$"
