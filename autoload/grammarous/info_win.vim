@@ -70,7 +70,7 @@ function! grammarous#info_win#action_help()
 endfunction
 
 function! s:get_info_buffer(e)
-    return join(
+    let lines = 
         \ [
         \   'Error: ' . a:e.category,
         \   '    ' . a:e.msg,
@@ -78,12 +78,17 @@ function! s:get_info_buffer(e)
         \   'Context:',
         \   '    ' . a:e.context,
         \   '',
+        \ ]
+    if a:e.replacements !=# ''
+        let lines +=
+        \ [
         \   'Correction:',
         \   '    ' . string(split(a:e.replacements, '#', 1)[0]),
         \   '',
-        \   "Press '?' in this window to show help",
-        \ ],
-        \ "\n")
+        \ ]
+    endif
+    let lines += ["Press '?' in this window to show help"]
+    return join(lines, "\n")
 endfunction
 
 function! grammarous#info_win#action_quit()

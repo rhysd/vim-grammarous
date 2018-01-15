@@ -536,7 +536,10 @@ function! grammarous#get_error_at(pos, errs)
 endfunction
 
 function! grammarous#fixit(err)
-    if empty(a:err) || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
+    if empty(a:err)
+     \ || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
+     \ || a:err.replacements ==# ''
+        call grammarous#error('Cannot fix this error automatically.')
         return
     endif
 
