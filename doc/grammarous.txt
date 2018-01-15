@@ -48,7 +48,7 @@ please see https://github.com/rhysd/vim-grammarous for more detail.
 ==============================================================================
 LICENSE                                                 *vim-grammarous-license*
 
-  Copyright (c) 2015 rhysd
+  Copyright (c) 2014 rhysd
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
