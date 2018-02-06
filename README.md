@@ -1,7 +1,7 @@
 vim-grammarous
 ==============
 
-vim-grammarous is a powerful grammar checker for Vim.  Simply do `:GrammarousCheck` to see the powerful checking.
+vim-grammarous is a powerful grammar checker for Vim. Simply do `:GrammarousCheck` to see the powerful checking.
 This plugin automatically downloads [LanguageTool](https://www.languagetool.org/), which requires Java 8+.
 
 This plugin can use job feature on Vim 8.0.27 (or later) or Neovim. It enables asynchronous command execution so you don't need to
@@ -50,8 +50,8 @@ You can use some mappings in the information window, which is opened to show the
 
 ### `<Plug>` mappings to execute actions anywhere
 
-vim-grammarous provides these global mappings in normal mode.  You can set them to your favorite keys by `:nmap`.
-However, above local mappings are enough to deal with grammar errors.  They are not always necessary.
+vim-grammarous provides these global mappings in normal mode. You can set them to your favorite keys by `:nmap`.
+However, above local mappings are enough to deal with grammar errors. They are not always necessary.
 
 | Mappings                                    | Description                                          |
 | -----------------------------------------   |:---------------------------------------------------- |
@@ -173,7 +173,7 @@ Please set `g:grammarous#show_first_error` to `1`. It opens an information windo
 ## Automatic installation
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.
-If it fails, you should install it manually.  Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
+If it fails, you should install it manually. Please download zip file of LanguageTool and extract it to `path/to/vim-grammarous/misc`.
 
 
 ## Requirements
@@ -186,7 +186,7 @@ If it fails, you should install it manually.  Please download zip file of Langua
 
 ## Future
 
-- __Ignore specific regions__ : Enable to specify the region which vim-grammarous should not check.  It is helpful for GFM's fenced code blocks.
+- __Ignore specific regions__ : Enable to specify the region which vim-grammarous should not check. It is helpful for GFM's fenced code blocks.
 - __Incremental grammarous check__ : Check only the sentences you input while starting from entering and leaving insert mode.
 
 
