@@ -280,7 +280,7 @@ function! s:invoke_check(range_start, ...)
     let cmdargs = printf(
             \   '-c %s -d %s -l %s --api %s',
             \   &fileencoding ? &fileencoding : &encoding,
-            \   string(join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ',')),
+            \   join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ','),
             \   lang,
             \   substitute(tmpfile, '\\\s\@!', '\\\\', 'g')
             \ )
