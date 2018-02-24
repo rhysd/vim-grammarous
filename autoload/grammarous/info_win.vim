@@ -75,9 +75,6 @@ function! s:get_info_buffer(e)
         \   'Error: ' . a:e.category,
         \   '    ' . a:e.msg,
         \   '',
-        \   'Context:',
-        \   '    ' . a:e.context,
-        \   '',
         \ ]
     if a:e.replacements !=# ''
         let lines +=
@@ -87,7 +84,13 @@ function! s:get_info_buffer(e)
         \   '',
         \ ]
     endif
-    let lines += ["Press '?' in this window to show help"]
+    let lines +=
+        \ [
+        \   'Context:',
+        \   '    ' . a:e.context,
+        \   '',
+        \   "Press '?' in this window to show help",
+        \ ]
     return lines
 endfunction
 
