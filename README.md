@@ -20,7 +20,7 @@ Execute the grammar checker for current buffer (when `[range]` is specified, the
 
 1. It makes LanguageTool check grammar (It takes a while)
 2. It highlights the locations of detected grammar errors
-3. When you move the cursor to a location of an error, it automatically shows the error with the information window.
+3. When you move the cursor to a location of an error, it automatically shows the error with the information window (named `[Grammarous]`).
 
 Please do `:GrammarousCheck --help` to show more detail about the command.
 
@@ -54,7 +54,7 @@ vim-grammarous provides these global mappings in normal mode. You can set them t
 However, above local mappings are enough to deal with grammar errors. They are not always necessary.
 
 | Mappings                                    | Description                                          |
-| -----------------------------------------   |:---------------------------------------------------- |
+| ------------------------------------------- |:---------------------------------------------------- |
 | `<Plug>(grammarous-move-to-info-window)`    | Move the cursor to the info window                   |
 | `<Plug>(grammarous-open-info-window)`       | Open the info window for the error under the cursor  |
 | `<Plug>(grammarous-reset)`                  | Reset the current check                              |
@@ -87,8 +87,8 @@ Execute below command in the buffer already checked or you want to check.
 
 ### `grammarous` denite.nvim source
 
-For [denite.nvim](https://github.com/Shougo/denite.nvim) users, `grammarous` denite source is available. Note that the kind is currently set to `file`, which means that actions a user can use are limited to open(jump), preview, etc.
-Execute below command in the buffer already checked.
+For [denite.nvim](https://github.com/Shougo/denite.nvim) users, `grammarous` denite source is available. Note that the kind is currently set to `file`,
+which means that actions a user can use are limited to open(jump), preview, etc. Execute below command in the buffer already checked.
 
 ```
 :Denite grammarous
