@@ -450,6 +450,11 @@ function! grammarous#reset()
         execute win . 'wincmd w'
     endif
 
+    if g:grammarous#use_location_list
+        lclose
+        lgetexpr []
+    endif
+
     call grammarous#reset_highlights()
     call grammarous#info_win#stop_auto_preview()
     call grammarous#info_win#close()
