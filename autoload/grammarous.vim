@@ -25,6 +25,7 @@ let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_f
 let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {})
 let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
 let g:grammarous#show_first_error                = get(g:, 'grammarous#show_first_error', 0)
+let g:grammarous#use_location_list               = get(g:, 'grammarous#use_location_list', 0)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -161,6 +162,20 @@ function! s:make_text(text)
     endif
 endfunction
 
+function! s:set_errors_to_location_list() abort
+    let f = expand('%:p')
+    let saved_efm = &l:errorformat
+    try
+        setlocal errorformat=%f:%l:%c:%m
+        let lines = map(copy(b:grammarous_result), '
+                \   printf("%s:%s:%s:%s [%s]", f, v:val.fromy + 1, v:val.fromx + 1, v:val.msg, v:val.category)
+                \')
+        lgetexpr lines
+    finally
+        let &l:errorformat = saved_efm
+    endtry
+endfunction
+
 function! s:set_errors_from_xml_string(xml) abort
     let b:grammarous_result = grammarous#get_errors_from_xml(s:XML.parse(substitute(a:xml, "\n", '', 'g')))
     let parsed = s:last_parsed_options
@@ -185,6 +200,10 @@ function! s:set_errors_from_xml_string(xml) abort
     if g:grammarous#enable_spell_check
         let s:saved_spell = &l:spell
         setlocal spell
+    endif
+
+    if g:grammarous#use_location_list
+        call s:set_errors_to_location_list()
     endif
 
     if g:grammarous#show_first_error

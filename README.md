@@ -169,6 +169,10 @@ let g:grammarous#languagetool_cmd = 'languagetool'
 
 Please set `g:grammarous#show_first_error` to `1`. It opens an information window after `:GrammarousCheck` immediately when some error detected.
 
+### I want to use a location list to jump among errors
+
+Please set `g:grammarous#use_location_list` to `1`. It sets all grammatical errors to location list.
+This variable is set to `0` by default to avoid conflicts of location list usage with other plugins.
 
 ## Automatic installation
 
