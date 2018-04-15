@@ -9,8 +9,9 @@ let s:is_cygwin = has('win32unix')
 let s:is_windows = has('win32') || has('win64')
 let s:job_is_available = has('job') && has('patch-8.0.0027')
 
-let s:grammarous#root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
-let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', s:grammarous#root . '/misc')
+let s:grammarous_root                            = fnamemodify(expand('<sfile>'), ':p:h:h')
+
+let g:grammarous#jar_dir                         = get(g:, 'grammarous#jar_dir', s:grammarous_root . '/misc')
 let g:grammarous#jar_url                         = get(g:, 'grammarous#jar_url', 'https://www.languagetool.org/download/LanguageTool-4.1.zip')
 let g:grammarous#java_cmd                        = get(g:, 'grammarous#java_cmd', 'java')
 let g:grammarous#default_lang                    = get(g:, 'grammarous#default_lang', 'en')
