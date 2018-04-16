@@ -112,13 +112,13 @@ function! s:prepare_jar(dir)
     return fnamemodify(jar, ':p')
 endfunction
 
-function! s:init()
+function! s:find_jar_path()
     if exists('s:jar_file')
         return s:jar_file
     endif
 
     if !executable(g:grammarous#java_cmd)
-        call grammarous#error('"java" command not found.  Please install Java 8+ .')
+        call grammarous#error('"java" command not found. Please install Java 8+')
         return ''
     endif
 
@@ -259,14 +259,14 @@ endfunction
 
 function! s:invoke_check(range_start, ...)
     if g:grammarous#languagetool_cmd ==# ''
-        let jar = s:init()
+        let jar = s:find_jar_path()
         if jar ==# ''
             return
         endif
     endif
 
     if a:0 < 1
-        call grammarous#error('Invalid argument')
+        call grammarous#error('Invalid argument. At least one argument is required.')
         return
     endif
 
