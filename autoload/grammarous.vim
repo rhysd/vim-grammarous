@@ -19,6 +19,7 @@ let g:grammarous#use_vim_spelllang               = get(g:, 'grammarous#use_vim_s
 let g:grammarous#info_window_height              = get(g:, 'grammarous#info_window_height', 10)
 let g:grammarous#info_win_direction              = get(g:, 'grammarous#info_win_direction', 'botright')
 let g:grammarous#use_fallback_highlight          = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
+let g:grammarous#enabled_rules                   = get(g:, 'grammarous#enabled_rules', {})
 let g:grammarous#disabled_rules                  = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
 let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
 let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
@@ -262,8 +263,6 @@ function! s:invoke_check(range_start, ...)
         if jar ==# ''
             return
         endif
-    else
-        let jar = ''
     endif
 
     if a:0 < 1
@@ -298,12 +297,21 @@ function! s:invoke_check(range_start, ...)
     endif
 
     let cmdargs = printf(
-            \   '-c %s -d %s -l %s --api %s',
+            \   '-c %s -l %s --api %s',
             \   &fileencoding ? &fileencoding : &encoding,
-            \   join(get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', [])), ','),
             \   lang,
             \   substitute(tmpfile, '\\\s\@!', '\\\\', 'g')
             \ )
+
+    let disabled = get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', []))
+    if !empty(disabled)
+        let cmdargs = '-d ' . join(disabled, ',') . ' ' . cmdargs
+    endif
+
+    let enabled = get(g:grammarous#enabled_rules, &filetype, get(g:grammarous#enabled_rules, '*', []))
+    if !empty(enabled)
+        let cmdargs = '-e ' . join(enabled, ',') . ' ' . cmdargs
+    endif
 
     if g:grammarous#languagetool_cmd !=# ''
         let cmd = printf('%s %s', g:grammarous#languagetool_cmd, cmdargs)

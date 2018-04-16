@@ -116,6 +116,17 @@ let g:grammarous#default_comments_only_filetypes = {
             \ }
 ```
 
+### How are rules added to the default rule set?
+
+Please use `g:grammarous#enabled_rules` to enable additional rules. The value is dictionary whose keys
+are a filetype (`*` means 'any') and whose values are a list of rule names.
+
+For example, below setting enables `PASSIVE_VOICE` rule in all filetypes.
+
+```vim
+let g:grammarous#enabled_rules = {'*' : ['PASSIVE_VOICE']}
+```
+
 ### Some rules annoy me.
 
 Please use `g:grammarous#disabled_rules` to disable specific rules.
@@ -129,7 +140,7 @@ let g:grammarous#disabled_rules = {
             \ }
 ```
 
-The rule names are displayed in Vim command line when you disable the rule in the info window or `<Plug>(grammarous-disable-rule)`.
+The rule names are displayed in Vim command line when you disable the rule in the info window or by `<Plug>(grammarous-disable-rule)`.
 
 ### How do I use this plugin with vim's spelllang?
 
