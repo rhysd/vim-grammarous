@@ -583,7 +583,7 @@ function! grammarous#fixit(err)
     try
         normal! v
         call cursor(a:err.toy+1, a:err.tox)
-        normal! "gy
+        noautocmd normal! "gy
         let from = getreg('g')
         let to = split(a:err.replacements, '#', 1)[0]
         call setreg('g', to, 'v')
