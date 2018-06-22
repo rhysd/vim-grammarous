@@ -142,6 +142,32 @@ let g:grammarous#disabled_rules = {
 
 The rule names are displayed in Vim command line when you disable the rule in the info window or by `<Plug>(grammarous-disable-rule)`.
 
+### How are categories added to the default rule set?
+
+Please use `g:grammarous#enabled_categories` to enable additional categories. The value is dictionary whose keys
+are a filetype (`*` means 'any') and whose values are a list of categories names.
+
+For example, below setting enables `PASSIVE_VOICE` rule in all filetypes.
+
+```vim
+let g:grammarous#enabled_categories = {'*' : ['PUNCTUATION']}
+```
+
+### Some categories annoy me.
+
+Please use `g:grammarous#disabled_categories` to disable specific categories.
+
+For example, below setting disables some categories for each filetype. `*` means all filetypes, `help` means vim help.
+
+```vim
+let g:grammarous#disabled_categories = {
+            \ '*' : ['PUNCTUATION'],
+            \ 'help' : ['PUNCTUATION', 'TYPOGRAPHY'],
+            \ }
+```
+
+The category names are displayed in Vim command line when you disable the category in the info window or by `<Plug>(grammarous-disable-category)`.
+
 ### How do I use this plugin with vim's spelllang?
 
 Plese use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.

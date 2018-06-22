@@ -21,6 +21,8 @@ let g:grammarous#info_win_direction              = get(g:, 'grammarous#info_win_
 let g:grammarous#use_fallback_highlight          = get(g:, 'grammarous#use_fallback_highlight', !exists('*matchaddpos'))
 let g:grammarous#enabled_rules                   = get(g:, 'grammarous#enabled_rules', {})
 let g:grammarous#disabled_rules                  = get(g:, 'grammarous#disabled_rules', {'*' : ['WHITESPACE_RULE', 'EN_QUOTES']})
+let g:grammarous#enabled_categories              = get(g:, 'grammarous#enabled_categories', {})
+let g:grammarous#disabled_categories             = get(g:, 'grammarous#disabled_categories', {})
 let g:grammarous#default_comments_only_filetypes = get(g:, 'grammarous#default_comments_only_filetypes', {'*' : 0})
 let g:grammarous#enable_spell_check              = get(g:, 'grammarous#enable_spell_check', 0)
 let g:grammarous#move_to_first_error             = get(g:, 'grammarous#move_to_first_error', 1)
@@ -303,14 +305,24 @@ function! s:invoke_check(range_start, ...)
             \   substitute(tmpfile, '\\\s\@!', '\\\\', 'g')
             \ )
 
-    let disabled = get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', []))
-    if !empty(disabled)
-        let cmdargs = '-d ' . join(disabled, ',') . ' ' . cmdargs
+    let disabled_rules = get(g:grammarous#disabled_rules, &filetype, get(g:grammarous#disabled_rules, '*', []))
+    if !empty(disabled_rules)
+        let cmdargs = '-d ' . join(disabled_rules, ',') . ' ' . cmdargs
     endif
 
-    let enabled = get(g:grammarous#enabled_rules, &filetype, get(g:grammarous#enabled_rules, '*', []))
-    if !empty(enabled)
-        let cmdargs = '-e ' . join(enabled, ',') . ' ' . cmdargs
+    let enabled_rules = get(g:grammarous#enabled_rules, &filetype, get(g:grammarous#enabled_rules, '*', []))
+    if !empty(enabled_rules)
+        let cmdargs = '-e ' . join(enabled_rules, ',') . ' ' . cmdargs
+    endif
+
+    let disabled_categories = get(g:grammarous#disabled_categories, &filetype, get(g:grammarous#disabled_categories, '*', []))
+    if !empty(disabled_categories)
+        let cmdargs = '--disablecategories ' . join(disabled_categories, ',') . ' ' . cmdargs
+    endif
+
+    let enabled_categories = get(g:grammarous#enabled_categories, &filetype, get(g:grammarous#enabled_categories, '*', []))
+    if !empty(enabled_categories)
+        let cmdargs = '--enablecategories ' . join(enabled_categories, ',') . ' ' . cmdargs
     endif
 
     if g:grammarous#languagetool_cmd !=# ''
@@ -728,6 +740,36 @@ function! grammarous#disable_rule_at(pos, errs)
     endif
 
     return grammarous#disable_rule(e.ruleId, a:errs)
+endfunction
+
+function! grammarous#disable_category(category, errs)
+    call grammarous#info_win#close()
+
+    " Note:
+    " reverse() is needed because of removing elements in list
+    for i in reverse(range(len(a:errs)))
+        let e = a:errs[i]
+
+        if e.categoryid ==# a:category
+            if !s:remove_error_highlight(e)
+                return 0
+            endif
+            unlet a:errs[i]
+        endif
+    endfor
+
+    echomsg 'Disabled category: ' . a:category
+
+    return 1
+endfunction
+
+function! grammarous#disable_category_at(pos, errs)
+    let e = grammarous#get_error_at(a:pos, a:errs)
+    if empty(e)
+        return 0
+    endif
+
+    return grammarous#disable_category(e.categoryid, a:errs)
 endfunction
 
 function! grammarous#move_to_next_error(pos, errs)
