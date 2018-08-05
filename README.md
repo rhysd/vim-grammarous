@@ -50,13 +50,15 @@ You can use some mappings in the information window, which is opened to show the
 
 ### `<Plug>` mappings to execute actions anywhere
 
-The above local mappings are enough to deal with grammar errors. However, for a more convenient use,
-vim-grammarous provides the following global mappings to enable using all grammarous actions
-globally within vim. This might be beneficial, as the standard mappings only work within the info
-window, which loses focus after every action. By mapping the actions listed below to your favorite
-shortcuts, it is possible to map all actions that work within the info window, to work globally
-within vim. This is done via :nmap and an example for a mapping would be 
-`:nmap <F5> (grammarous-move-to-next-error)`.  
+The above local mappings are enough to deal with grammar errors.
+
+However, for a more convenient use, vim-grammarous provides the following global mappings to enable
+using all grammarous actions globally within vim. This might be beneficial, as the standard mappings
+only work within the info window, which loses focus after every action.
+
+By mapping the actions listed below to your favorite shortcuts, it is possible to map all actions
+that work within the info window, to work globally within vim. This is done via `:nmap` and an example
+for a mapping would be `:nmap <F5> (grammarous-move-to-next-error)`.
 
 | Mappings                                    | Description                                          |
 | ------------------------------------------- |:---------------------------------------------------- |
