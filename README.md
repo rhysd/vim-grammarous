@@ -177,7 +177,7 @@ The category names are displayed in Vim command line when you disable the catego
 
 ### How do I use this plugin with vim's spelllang?
 
-Plese use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.
+Please use `g:grammarous#use_vim_spelllang`. Default 0, to enable 1.
 
 ### I want to use above `<Plug>` mappings only after checking.
 
