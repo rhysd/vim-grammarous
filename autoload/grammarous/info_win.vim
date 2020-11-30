@@ -79,8 +79,8 @@ function! s:get_info_buffer(e)
     if a:e.replacements !=# ''
         let lines +=
         \ [
-        \   'Correction:',
-        \   '    ' . string(split(a:e.replacements, '#', 1)[0]),
+        \   'Corrections:',
+        \   '    ' . join(split(a:e.replacements, '#', 1), '; '),
         \   '',
         \ ]
     endif
