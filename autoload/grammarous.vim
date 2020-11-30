@@ -30,6 +30,7 @@ let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {
 let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
 let g:grammarous#show_first_error                = get(g:, 'grammarous#show_first_error', 0)
 let g:grammarous#use_location_list               = get(g:, 'grammarous#use_location_list', 0)
+let g:grammarous#convert_char_to_byte            = get(g:, 'grammarous#convert_char_to_byte', 0)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -180,6 +181,30 @@ function! s:set_errors_to_location_list() abort
     endtry
 endfunction
 
+function! s:convert_char_to_byte(errs) abort
+    for e in a:errs
+        let line_from = getline(str2nr(e.fromy)+1)
+        let line_to = getline(str2nr(e.toy)+1)
+        let ch_from = strcharpart(line_from, e.fromx, 1)
+        let e.errorlength = len(strcharpart(line_from, e.fromx, e.errorlength))
+        let e.fromx = byteidx(line_from,str2nr(e.fromx))+1
+        let e.tox = byteidx(line_to,str2nr(e.tox))
+        if ch_from =~ '\(\s\|[`<>!@#$%^&*(){}\[\].,:;\"''\\/]\)'
+            let e.fromx += 1
+            if e.fromy == e.toy
+                let e.tox += 1
+            endif
+        endif
+    endfor
+endfunction
+
+function! s:shift_x(errs) abort
+    for e in a:errs
+        let e.fromx += 1
+        let e.tox += 1
+    endfor
+endfunction
+
 function! s:set_errors_from_xml_string(xml) abort
     let b:grammarous_result = grammarous#get_errors_from_xml(s:XML.parse(substitute(a:xml, "\n", '', 'g')))
     let parsed = s:last_parsed_options
@@ -194,11 +219,17 @@ function! s:set_errors_from_xml_string(xml) abort
         return
     endif
 
+    if g:grammarous#convert_char_to_byte
+        call s:convert_char_to_byte(b:grammarous_result)
+    else
+        call s:shift_x(b:grammarous_result)
+    endif
+
     let len = len(b:grammarous_result)
     echomsg printf('Detected %d grammatical error%s', len, len > 1 ? 's' : '')
     call grammarous#highlight_errors_in_current_buffer(b:grammarous_result)
     if parsed['move-to-first-error']
-        call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx+1)
+        call cursor(b:grammarous_result[0].fromy+1, b:grammarous_result[0].fromx)
     endif
 
     if g:grammarous#enable_spell_check
@@ -396,9 +427,9 @@ function! s:matcherrpos(...)
     return matchaddpos('GrammarousError', [a:000], 999)
 endfunction
 
-function! s:highlight_error(from, to)
+function! s:highlight_error(from, to, length)
     if a:from[0] == a:to[0]
-        return s:matcherrpos(a:from[0], a:from[1], a:to[1] - a:from[1])
+        return s:matcherrpos(a:from[0], a:from[1], a:length)
     endif
 
     let ids = [s:matcherrpos(a:from[0], a:from[1], strlen(getline(a:from[0]))+1 - a:from[1])]
@@ -419,9 +450,10 @@ function! grammarous#highlight_errors_in_current_buffer(errs)
     if !g:grammarous#use_fallback_highlight
         for e in a:errs
             let e.id = s:highlight_error(
-                    \   [str2nr(e.fromy)+1, str2nr(e.fromx)+1],
-                    \   [str2nr(e.toy)+1, str2nr(e.tox)+1],
-                    \ )
+                    \   [str2nr(e.fromy)+1, str2nr(e.fromx)],
+                    \   [str2nr(e.toy)+1, str2nr(e.tox)],
+                    \   e.errorlength
+                    \   )
         endfor
     else
         for e in a:errs
@@ -560,7 +592,7 @@ function! s:binary_search_by_pos(errors, the_pos, start, end)
     endif
 
     let m = (a:start + a:end) / 2
-    let from = [a:errors[m].fromy+1, a:errors[m].fromx+1]
+    let from = [a:errors[m].fromy+1, a:errors[m].fromx]
     let to = [a:errors[m].toy+1, a:errors[m].tox]
 
     if s:less_position(a:the_pos, from)
@@ -582,7 +614,7 @@ endfunction
 
 function! grammarous#fixit(err)
     if empty(a:err)
-     \ || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx+1)
+     \ || !grammarous#move_to_checked_buf(a:err.fromy+1, a:err.fromx)
      \ || a:err.replacements ==# ''
         call grammarous#error('Cannot fix this error automatically.')
         return
@@ -774,7 +806,7 @@ endfunction
 
 function! grammarous#move_to_next_error(pos, errs)
     for e in a:errs
-        let p = [e.fromy+1, e.fromx+1]
+        let p = [e.fromy+1, e.fromx]
         if s:less_position(a:pos, p)
             return s:move_to_pos(p)
         endif
@@ -785,7 +817,7 @@ endfunction
 
 function! grammarous#move_to_previous_error(pos, errs)
     for e in reverse(copy(a:errs))
-        let p = [e.fromy+1, e.fromx+1]
+        let p = [e.fromy+1, e.fromx]
         if s:less_position(p, a:pos)
             return s:move_to_pos(p)
         endif
