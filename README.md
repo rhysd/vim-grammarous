@@ -218,6 +218,10 @@ Please set `g:grammarous#show_first_error` to `1`. It opens an information windo
 Please set `g:grammarous#use_location_list` to `1`. It sets all grammatical errors to location list.
 This variable is set to `0` by default to avoid conflicts of location list usage with other plugins.
 
+### I want to highlight error by char count not byte
+
+Please set `g:grammarous#convert_char_to_byte` to `1`. This should fix wrong highlight in UTF-8 text.
+
 ## Automatic installation
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.
