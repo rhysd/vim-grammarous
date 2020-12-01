@@ -189,7 +189,7 @@ function! s:convert_char_to_byte(errs) abort
         let e.errorlength = len(strcharpart(line_from, e.fromx, e.errorlength))
         let e.fromx = byteidx(line_from, str2nr(e.fromx)) + 1
         let e.tox = byteidx(line_to, str2nr(e.tox))
-        if ch_from =~ '\(\s\|[`<>!@#$%^&*(){}\[\].,:;\"''\\/]\)'
+        if ch_from =~# '\(\s\|[`<>!@#$%^&*(){}\[\].,:;\"''\\/]\)'
             let e.fromx += 1
             if e.fromy == e.toy
                 let e.tox += 1
