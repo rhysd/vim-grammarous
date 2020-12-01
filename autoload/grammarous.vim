@@ -30,7 +30,7 @@ let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {
 let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
 let g:grammarous#show_first_error                = get(g:, 'grammarous#show_first_error', 0)
 let g:grammarous#use_location_list               = get(g:, 'grammarous#use_location_list', 0)
-let g:grammarous#convert_char_to_byte            = get(g:, 'grammarous#convert_char_to_byte', 0)
+let g:grammarous#convert_char_to_byte            = get(g:, 'grammarous#convert_char_to_byte', 1)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
