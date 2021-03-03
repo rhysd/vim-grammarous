@@ -185,16 +185,10 @@ function! s:convert_char_to_byte(errs) abort
     for e in a:errs
         let line_from = getline(str2nr(e.fromy) + 1)
         let line_to = getline(str2nr(e.toy) + 1)
-        let ch_from = strcharpart(line_from, e.fromx, 1)
+        let ch_from = strcharpart(line_from, str2nr(e.fromx), 1)
         let e.errorlength = len(strcharpart(line_from, e.fromx, e.errorlength))
-        let e.fromx = byteidx(line_from, str2nr(e.fromx)) + 1
-        let e.tox = byteidx(line_to, str2nr(e.tox))
-        if ch_from =~# '\(\s\|[`<>!@#$%^&*(){}\[\].,:;\"''\\/]\)'
-            let e.fromx += 1
-            if e.fromy == e.toy
-                let e.tox += 1
-            endif
-        endif
+        let e.fromx = len(strcharpart(line_from, 0, str2nr(e.fromx))) + 1
+        let e.tox = len(strcharpart(line_to, 0, str2nr(e.tox))) + 1
     endfor
 endfunction
 
