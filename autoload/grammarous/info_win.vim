@@ -2,7 +2,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! grammarous#info_win#action_return()
-    call grammarous#move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx)
+    call grammarous#move_to_checked_buf(b:grammarous_preview_error.fromy+1, b:grammarous_preview_error.fromx+1)
 endfunction
 
 function! grammarous#info_win#action_fixit()
@@ -13,7 +13,7 @@ function! grammarous#info_win#action_remove_error()
     let e = b:grammarous_preview_error
     if !grammarous#move_to_checked_buf(
         \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx )
+        \ b:grammarous_preview_error.fromx+1 )
         return
     endif
 
@@ -24,7 +24,7 @@ function! grammarous#info_win#action_disable_rule()
     let e = b:grammarous_preview_error
     if !grammarous#move_to_checked_buf(
         \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx )
+        \ b:grammarous_preview_error.fromx+1 )
         return
     endif
 
@@ -34,7 +34,7 @@ endfunction
 function! grammarous#info_win#action_next_error()
     if !grammarous#move_to_checked_buf(
         \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx )
+        \ b:grammarous_preview_error.fromx+1 )
         return
     endif
 
@@ -46,7 +46,7 @@ endfunction
 function! grammarous#info_win#action_previous_error()
     if !grammarous#move_to_checked_buf(
         \ b:grammarous_preview_error.fromy+1,
-        \ b:grammarous_preview_error.fromx )
+        \ b:grammarous_preview_error.fromx+1 )
         return
     endif
 
