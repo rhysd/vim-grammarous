@@ -353,7 +353,7 @@ function! s:invoke_check(range_start, ...)
     if g:grammarous#languagetool_cmd !=# ''
         let cmd = printf('%s %s', g:grammarous#languagetool_cmd, cmdargs)
     else
-        let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
+        let cmd = printf('%s -jar %s --line-by-line %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
     if s:job_is_available
