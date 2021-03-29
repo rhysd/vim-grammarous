@@ -30,6 +30,7 @@ let g:grammarous#hooks                           = get(g:, 'grammarous#hooks', {
 let g:grammarous#languagetool_cmd                = get(g:, 'grammarous#languagetool_cmd', '')
 let g:grammarous#show_first_error                = get(g:, 'grammarous#show_first_error', 0)
 let g:grammarous#use_location_list               = get(g:, 'grammarous#use_location_list', 0)
+let g:grammarous#convert_char_to_byte            = get(g:, 'grammarous#convert_char_to_byte', 1)
 
 highlight default link GrammarousError SpellBad
 highlight default link GrammarousInfoError ErrorMsg
@@ -180,6 +181,24 @@ function! s:set_errors_to_location_list() abort
     endtry
 endfunction
 
+function! s:convert_char_to_byte(errs) abort
+    for e in a:errs
+        let line_from = getline(str2nr(e.fromy) + 1)
+        let line_to = getline(str2nr(e.toy) + 1)
+        let ch_from = strcharpart(line_from, str2nr(e.fromx), 1)
+        let e.errorlength = len(strcharpart(line_from, e.fromx, e.errorlength))
+        let e.fromx = len(strcharpart(line_from, 0, str2nr(e.fromx)))
+        let e.tox = len(strcharpart(line_to, 0, str2nr(e.tox)))
+    endfor
+endfunction
+
+function! s:shift_x(errs) abort
+    for e in a:errs
+        let e.fromx += 1
+        let e.tox += 1
+    endfor
+endfunction
+
 function! s:set_errors_from_xml_string(xml) abort
     let b:grammarous_result = grammarous#get_errors_from_xml(s:XML.parse(substitute(a:xml, "\n", '', 'g')))
     let parsed = s:last_parsed_options
@@ -192,6 +211,12 @@ function! s:set_errors_from_xml_string(xml) abort
     if empty(b:grammarous_result)
         echomsg 'Yay! No grammatical errors detected.'
         return
+    endif
+
+    if g:grammarous#convert_char_to_byte
+        call s:convert_char_to_byte(b:grammarous_result)
+    else
+        call s:shift_x(b:grammarous_result)
     endif
 
     let len = len(b:grammarous_result)
@@ -328,7 +353,7 @@ function! s:invoke_check(range_start, ...)
     if g:grammarous#languagetool_cmd !=# ''
         let cmd = printf('%s %s', g:grammarous#languagetool_cmd, cmdargs)
     else
-        let cmd = printf('%s -jar %s %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
+        let cmd = printf('%s -jar %s --line-by-line %s', g:grammarous#java_cmd, substitute(jar, '\\\s\@!', '\\\\', 'g'), cmdargs)
     endif
 
     if s:job_is_available
@@ -396,9 +421,9 @@ function! s:matcherrpos(...)
     return matchaddpos('GrammarousError', [a:000], 999)
 endfunction
 
-function! s:highlight_error(from, to)
+function! s:highlight_error(from, to, length)
     if a:from[0] == a:to[0]
-        return s:matcherrpos(a:from[0], a:from[1], a:to[1] - a:from[1])
+        return s:matcherrpos(a:from[0], a:from[1], a:length)
     endif
 
     let ids = [s:matcherrpos(a:from[0], a:from[1], strlen(getline(a:from[0]))+1 - a:from[1])]
@@ -421,7 +446,8 @@ function! grammarous#highlight_errors_in_current_buffer(errs)
             let e.id = s:highlight_error(
                     \   [str2nr(e.fromy)+1, str2nr(e.fromx)+1],
                     \   [str2nr(e.toy)+1, str2nr(e.tox)+1],
-                    \ )
+                    \   e.errorlength
+                    \   )
         endfor
     else
         for e in a:errs
