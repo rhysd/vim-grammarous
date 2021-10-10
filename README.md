@@ -218,6 +218,22 @@ Please set `g:grammarous#show_first_error` to `1`. It opens an information windo
 Please set `g:grammarous#use_location_list` to `1`. It sets all grammatical errors to location list.
 This variable is set to `0` by default to avoid conflicts of location list usage with other plugins.
 
+### I want to ignore words
+
+Edit the `ignore.txt` file corresponding to your language. The files for
+languages are located in the hunspell directory of the LanguageTool
+installation.
+
+`path/to/vim-grammarous/misc/LanguageTool-stable/LanguageTool-5.4/org/languagetool/resource/LANGUAGECODE/hunspell/ignore.txt`
+
+For example to ignore words when checking German (de) text:
+
+`path/to/vim-grammarous/misc/LanguageTool-stable/LanguageTool-5.4/org/languagetool/resource/de/hunspell/ignore.txt`
+
+Add the words you want to ignore to the `ignore.txt` file and save. When the
+grammar checker is executed again, these words do not show up as errors
+anymore.
+
 ## Automatic installation
 
 This plugin attempts to install [LanguageTool](https://www.languagetool.org/) using `curl` or `wget` command at first time.
