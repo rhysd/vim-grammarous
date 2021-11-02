@@ -9,6 +9,14 @@ be blocked until the check has been done on Vim8+ or Neovim.
 
 ![demo screen cast](https://github.com/rhysd/ss/blob/master/vim-grammarous/demo.gif?raw=true)
 
+## Installation
+
+If you are using [Vundle](https://github.com/VundleVim/Vundle.vim), add the following lines to your `~/.vimrc` file between the `vundle#begin()` and `vundle#end()` block.
+```
+" Adds the vim-grammarous plugin as a Grammar checker
+" Source: https://github.com/rhysd/vim-grammarous/
+Plugin 'rhysd/vim-grammarous'
+```
 
 ## Commands
 
