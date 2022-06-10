@@ -58,7 +58,7 @@ only work within the info window, which loses focus after every action.
 
 By mapping the actions listed below to your favorite shortcuts, it is possible to map all actions
 that work within the info window, to work globally within vim. This is done via `:nmap` and an example
-for a mapping would be `:nmap <F5> (grammarous-move-to-next-error)`.
+for a mapping would be `:nmap <F5> <Plug>(grammarous-move-to-next-error)`.
 
 | Mappings                                    | Description                                          |
 | ------------------------------------------- |:---------------------------------------------------- |
